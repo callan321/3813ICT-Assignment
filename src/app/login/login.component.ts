@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { AuthService} from "../../services/auth.service";
 
 interface LoginResponse {
   message: string;
@@ -24,7 +25,8 @@ export class LoginComponent {
   username: string = '';
   password: string = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
+
 
   onSubmit() {
     const data = {
@@ -35,7 +37,8 @@ export class LoginComponent {
     this.http.post<LoginResponse>('http://localhost:3000/api/login', data).subscribe(
       (res: LoginResponse) => {
         console.log('User logged in successfully', res);
-        localStorage.setItem('username', res.user.username);
+        this.authService.setUsername(res.user.username);
+
       },
       (err: HttpErrorResponse) => {
         console.log('There was an error during the login process', err.error);
