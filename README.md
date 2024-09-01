@@ -1,8 +1,9 @@
 # Software Frameworks Assignment
 
 
-### Components 
-- [ ] Login 
-- [ ] Side Bar
+### Ui Components 
+- [x] Login 
+- [x] Side Bar
 
-### 
+### db 
+- [ ] User Auth
