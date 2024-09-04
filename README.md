@@ -1,5 +1,31 @@
 # Software Frameworks Assignment
 
+## Getting Started
+
+### 1. Clone the Repository
+```
+git clone https://github.com/callan321/3813ICT-Assignment.git
+cd 3813ICT-Assignment
+```
+
+### 2. Install and Run Backend Dependencies
+``` 
+cd src/server
+npm install
+npm start
+```
+
+### 3. Install Frontend and Run Frontend Dependencies
+``` 
+npm install
+ng serve
+```
+
+### 4. Follow the links:
+- Backend: http://localhost:3000
+- Frontend: http://localhost:4200
+
+
 ## Requirements
 - [x] Login
 - [x] Side Bar
