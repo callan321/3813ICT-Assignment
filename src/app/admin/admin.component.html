@@ -1,25 +1,39 @@
-<div *ngIf="users.length > 0; else noUsers">
-  <h2>User List</h2>
-  <table border="1">
+<div *ngIf="groups.length > 0; else noData">
+  <h2>Groups</h2>
+  <table class="table table-bordered">
     <thead>
     <tr>
-      <th>ID</th>
-      <th>Username</th>
-      <th>Email</th>
-      <th>Roles</th>
+      <th>Group ID</th>
+      <th>Group Name</th>
+      <th>Created By</th>
+      <th>Admins</th>
+      <th>Members</th>
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let user of users">
-      <td>{{ user.id }}</td>
-      <td>{{ user.username }}</td>
-      <td>{{ user.email }}</td>
-      <td>{{ user.roles.join(', ') }}</td>
+    <tr *ngFor="let group of groups">
+      <td>{{ group.groupId }}</td>
+      <td>{{ group.groupName }}</td>
+      <td>{{ getUsernameById(group.createdBy) }}</td>
+      <td>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" *ngFor="let admin of group.admins">
+            {{ getUsernameById(admin) }}
+          </li>
+        </ul>
+      </td>
+      <td>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" *ngFor="let member of group.members">
+            {{ getUsernameById(member) }}
+          </li>
+        </ul>
+      </td>
     </tr>
     </tbody>
   </table>
 </div>
 
-<ng-template #noUsers>
-  <p>No users found.</p>
+<ng-template #noData>
+  <p>No groups found.</p>
 </ng-template>
