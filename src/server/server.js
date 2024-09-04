@@ -1,76 +1,46 @@
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const { users, groups } = require('./model/user'); // Import users and groups from the model
+// Import controllers and authentication module
+const {
+  getAllUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  getAllGroups,
+  createGroup,
+  updateGroup,
+  deleteGroup
+} = require('./modules/controllers'); // Adjusted path for controllers
+
+const { loginUser } = require('./modules/auth'); // Import login logic from auth module
 
 app.use(cors());
 app.use(express.json());
 
+// Status endpoint
 app.get('/', (req, res) => {
   res.json({ status: 'Server is running', port: port });
 });
 
-// Route to get all users
-app.get('/api/users', (req, res) => {
-  res.json(users);
-});
+// Users CRUD Endpoints
+app.get('/api/users', getAllUsers);
+app.post('/api/users', createUser);
+app.put('/api/users/:id', updateUser);
+app.delete('/api/users/:id', deleteUser);
 
-// Route to get all groups
-app.get('/api/groups', (req, res) => {
-  res.json(groups);
-});
+// Groups CRUD Endpoints
+app.get('/api/groups', getAllGroups);
+app.post('/api/groups', createGroup);
+app.put('/api/groups/:groupId', updateGroup);
+app.delete('/api/groups/:groupId', deleteGroup);
 
-// Route to get all channels within a group
-app.get('/api/groups/:groupId/channels', (req, res) => {
-  const groupId = parseInt(req.params.groupId);
-  const group = groups.find(g => g.groupId === groupId);
+// Login Endpoint
+app.post('/api/login', loginUser); // Login route using auth.js
 
-  if (group) {
-    res.json(group.channels);
-  } else {
-    res.status(404).json({ message: 'Group not found' });
-  }
-});
-
-// Route to get all messages within a channel
-app.get('/api/groups/:groupId/channels/:channelId/messages', (req, res) => {
-  const groupId = parseInt(req.params.groupId);
-  const channelId = parseInt(req.params.channelId);
-  const group = groups.find(g => g.groupId === groupId);
-
-  if (group) {
-    const channel = group.channels.find(c => c.channelId === channelId);
-
-    if (channel) {
-      res.json(channel.messages);
-    } else {
-      res.status(404).json({ message: 'Channel not found' });
-    }
-  } else {
-    res.status(404).json({ message: 'Group not found' });
-  }
-});
-
-app.post('/api/login', (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Username and password are required' });
-  }
-
-  const user = users.find(user => user.username === username && user.password === password);
-
-  if (user) {
-    // Include 'id' in the response
-    res.json({ message: 'Login successful', user: { username: user.username, id: user.id } });
-  } else {
-    res.status(401).json({ message: 'Invalid username or password' });
-  }
-});
-
+// Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
   console.log(`http://localhost:${port}`);
