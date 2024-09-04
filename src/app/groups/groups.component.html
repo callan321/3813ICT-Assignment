@@ -1,0 +1,48 @@
+<h2>Groups</h2>
+<table class="table table-bordered">
+  <thead>
+  <tr>
+    <th>Group ID</th>
+    <th>Group Name</th>
+    <th>Created By</th>
+    <th>Admins</th>
+    <th>Members</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let group of groups">
+    <td>{{ group.groupId }}</td>
+    <td>{{ group.groupName }}</td>
+    <td>{{ getUsernameById(group.createdBy) }}</td>
+    <td>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item" *ngFor="let admin of group.admins">
+          {{ getUsernameById(admin) }}
+        </li>
+      </ul>
+    </td>
+    <td>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item" *ngFor="let member of group.members">
+          {{ getUsernameById(member) }}
+        </li>
+      </ul>
+    </td>
+    <td>
+      <button (click)="deleteGroup(group.groupId)" class="btn btn-danger">Delete</button>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h3>Create New Group</h3>
+<form (submit)="createGroup()">
+  <input type="text" [(ngModel)]="newGroup.groupName" placeholder="Group Name" name="groupName" required>
+  <input type="number" [(ngModel)]="newGroup.createdBy" placeholder="Created By (User ID)" name="createdBy" required>
+  <button type="submit" class="btn btn-primary">Create Group</button>
+</form>
+
+<ng-template #noData>
+  <p>No groups found.</p>
+</ng-template>

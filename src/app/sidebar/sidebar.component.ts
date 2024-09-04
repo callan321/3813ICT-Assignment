@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-import {RouterOutlet, Router} from "@angular/router";
+import {RouterOutlet, Router, RouterLink} from "@angular/router";
 import {NgForOf} from "@angular/common";
 
 interface Channel {
@@ -25,7 +25,8 @@ interface Group {
   standalone: true,
   imports: [
     RouterOutlet,
-    NgForOf
+    NgForOf,
+    RouterLink
   ],
   styleUrls: ['./sidebar.component.css']
 })
