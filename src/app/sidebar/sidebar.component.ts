@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-import {RouterOutlet, Router, RouterLink} from "@angular/router";
-import {NgForOf} from "@angular/common";
+import { RouterOutlet, Router, RouterLink } from "@angular/router";
+import { NgForOf } from "@angular/common";
+import * as bootstrap from 'bootstrap';  // Import Bootstrap Modal
 
 interface Channel {
   channelId: number;
@@ -65,8 +66,14 @@ export class SidebarComponent implements OnInit {
     console.log('Selected Group:', this.selectedGroup.groupId, 'Channels:', this.filteredChannels);
   }
 
-  logout(): void {
+  openLogoutModal(): void {
+    const modalElement = document.getElementById('logoutConfirmationModal') as HTMLElement;
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+  }
+
+  confirmLogout(): void {
     this.authService.clearAuthData();
-    this.router.navigate(['/login']); // Redirect to login page
+    this.router.navigate(['/login']); // Redirect to login page after logout
   }
 }

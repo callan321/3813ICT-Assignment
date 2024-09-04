@@ -21,9 +21,9 @@
       <td>{{ user.username }}</td>
       <td>
         <select [(ngModel)]="user.roles" class="form-select" (change)="changeUserRole(user.id, user.roles)">
-          <option value="Admin">Admin</option>
-          <option value="User">User</option>
-          <option value="Guest">Guest</option>
+          <option value="Admin">super_admin</option>
+          <option value="User">group_admin</option>
+          <option value="Guest">user</option>
         </select>
       </td>
       <td class="text-nowrap">
@@ -51,5 +51,4 @@
       </div>
     </div>
   </div>
-
 </div>
