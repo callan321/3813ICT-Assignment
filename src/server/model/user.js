@@ -11,7 +11,7 @@ class User {
 
 let users = [
   new User(1, 'super', 'super@example.com', '123', ['Super Admin']),
-  new User(2, 'regular', 'regular@example.com', 'password', ['User']),
+  new User(2, 'user', 'regular@example.com', 'password', ['User']),
 ];
 
 module.exports = {

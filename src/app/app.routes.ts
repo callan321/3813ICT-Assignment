@@ -3,6 +3,7 @@ import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 import { AuthGuard } from '../services/auth.guard';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import {AdminComponent} from "./admin/admin.component";
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -13,7 +14,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: 'home', component: HomeComponent },
-      // Add more routes here as needed
+      {path: 'admin', component: AdminComponent },
     ]
   },
 ];

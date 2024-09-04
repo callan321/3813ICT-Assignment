@@ -1,0 +1,25 @@
+<div *ngIf="users.length > 0; else noUsers">
+  <h2>User List</h2>
+  <table border="1">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Roles</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let user of users">
+      <td>{{ user.id }}</td>
+      <td>{{ user.username }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.roles.join(', ') }}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<ng-template #noUsers>
+  <p>No users found.</p>
+</ng-template>

@@ -1,9 +1,10 @@
 # Software Frameworks Assignment
 
 
-### Ui Components 
+### Steps  
 - [x] Login 
 - [x] Side Bar
+- [x] User Auth
+- [ ] Roles 
+- [ ] admin crud 
 
-### db 
-- [ ] User Auth
