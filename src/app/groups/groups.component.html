@@ -1,4 +1,12 @@
 <h2>Groups</h2>
+
+<h3>Create New Group</h3>
+<form (submit)="createGroup()">
+  <input type="text" [(ngModel)]="newGroup.groupName" placeholder="Group Name" name="groupName" required>
+  <input type="number" [(ngModel)]="newGroup.createdBy" placeholder="Created By (User ID)" name="createdBy" required>
+  <button type="submit" class="btn btn-primary">Create Group</button>
+</form>
+
 <table class="table table-bordered">
   <thead>
   <tr>
@@ -36,12 +44,7 @@
   </tbody>
 </table>
 
-<h3>Create New Group</h3>
-<form (submit)="createGroup()">
-  <input type="text" [(ngModel)]="newGroup.groupName" placeholder="Group Name" name="groupName" required>
-  <input type="number" [(ngModel)]="newGroup.createdBy" placeholder="Created By (User ID)" name="createdBy" required>
-  <button type="submit" class="btn btn-primary">Create Group</button>
-</form>
+
 
 <ng-template #noData>
   <p>No groups found.</p>

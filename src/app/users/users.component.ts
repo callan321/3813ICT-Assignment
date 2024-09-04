@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {FormsModule} from "@angular/forms";
-import {NgForOf} from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { NgForOf } from "@angular/common";
 
 @Component({
   selector: 'app-users',
@@ -24,6 +24,7 @@ export class UsersComponent implements OnInit {
     this.loadUsers();
   }
 
+  // Fetch all users from the backend
   loadUsers(): void {
     this.http.get<any[]>(this.apiUsersUrl).subscribe(
       data => this.users = data,
@@ -31,6 +32,7 @@ export class UsersComponent implements OnInit {
     );
   }
 
+  // Create a new user
   createUser(): void {
     this.http.post(this.apiUsersUrl, this.newUser).subscribe(
       () => {
@@ -41,10 +43,24 @@ export class UsersComponent implements OnInit {
     );
   }
 
+  // Delete a user
   deleteUser(userId: number): void {
     this.http.delete(`${this.apiUsersUrl}/${userId}`).subscribe(
       () => this.loadUsers(),
       error => console.error('Error deleting user', error)
+    );
+  }
+
+  // Update the user role
+  changeUserRole(userId: number, newRole: string[]): void {
+    const updatedUser = { roles: newRole };  // Create a payload with the new role
+
+    this.http.put(`${this.apiUsersUrl}/${userId}`, updatedUser).subscribe(
+      () => {
+        console.log(`User ${userId} roles updated to: ${newRole}`);
+        this.loadUsers();  // Reload users to reflect the changes
+      },
+      error => console.error('Error updating user role', error)
     );
   }
 }
