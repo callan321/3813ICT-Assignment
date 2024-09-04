@@ -54,7 +54,6 @@ app.get('/api/groups/:groupId/channels/:channelId/messages', (req, res) => {
   }
 });
 
-// Route to handle login
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
 
@@ -65,7 +64,8 @@ app.post('/api/login', (req, res) => {
   const user = users.find(user => user.username === username && user.password === password);
 
   if (user) {
-    res.json({ message: 'Login successful', user: { username: user.username } });
+    // Include 'id' in the response
+    res.json({ message: 'Login successful', user: { username: user.username, id: user.id } });
   } else {
     res.status(401).json({ message: 'Invalid username or password' });
   }

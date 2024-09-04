@@ -1,33 +1,41 @@
-<div class="d-flex flex-row">
-  <nav
-    class="d-flex flex-column bg-dark text-white vh-100"
-    style="width: 80px;"
-  >
-    <div
-      class="d-flex align-items-center justify-content-center p-3 border-bottom border-secondary"
-    >
-
-      <ul class="nav nav-pills flex-column mb-auto text-center mt-2">
-
-        <li class="nav-item mb-2">
-          <a href="/home" class="nav-link text-white py-3">
-            <i class="bi bi-house-door-fill fs-4"></i>
-          </a>
-        <li class="nav-item mb-2">
-          <a href="/admin" class="nav-link text-white py-3">
-            <i class="bi bi-gear-fill fs-4"></i>
-          </a>
-        </li>
-      </ul>
-    </div>
-
-    <ul class="nav nav-pills flex-column mb-auto text-center mt-2">
-
+<div class="d-flex">
+  <!-- Left Sidebar to Display Group IDs -->
+  <nav class="d-flex flex-column bg-dark text-white vh-100" style="width: 80px;">
+    <!-- Static Home and Admin Links -->
+    <ul class="nav nav-pills flex-column text-center mt-2">
       <li class="nav-item mb-2">
-        <a href="#" class="nav-link text-white py-3">
-          <i class="bi bi-chat-dots-fill fs-4"></i>
+        <a href="/home" class="nav-link text-white py-3">
+          <i class="bi bi-house-door-fill fs-4"></i>
         </a>
+      </li>
+      <li class="nav-item mb-2">
+        <a href="/admin" class="nav-link text-white py-3">
+          <i class="bi bi-gear-fill fs-4"></i>
+        </a>
+      </li>
+    </ul>
 
+    <!-- Dynamic Group Links (Display Group IDs) -->
+    <ul class="nav nav-pills flex-column text-center mt-2">
+      <li class="nav-item mb-2" *ngFor="let group of groups">
+        <a class="nav-link text-white py-3" (click)="selectGroup(group)" style="cursor: pointer;">
+          G{{ group.groupId }}
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Right Sidebar to Display Channels -->
+  <nav class="d-flex flex-column bg-dark text-white vh-100" style="width: 260px;">
+    <div class="d-flex flex-column p-3 border-bottom border-secondary text-center">
+      <h5 class="mb-3">{{ selectedGroup?.groupName || 'No Group Selected' }}</h5>
+    </div>
+    <ul class="nav nav-pills flex-column">
+      <li class="nav-item" *ngFor="let channel of filteredChannels">
+        <a class="nav-link text-white py-2" style="cursor: pointer;">
+          <i class="bi bi-chat-dots-fill"></i> {{ channel.channelName }}
+        </a>
+      </li>
     </ul>
   </nav>
 

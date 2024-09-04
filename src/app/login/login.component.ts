@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { AuthService} from "../../services/auth.service";
-import {Router} from "@angular/router";
+import { AuthService } from "../../services/auth.service";
+import { Router } from "@angular/router";
 
 interface LoginResponse {
   message: string;
   user: {
     username: string;
+    id: number; // Add the user ID here
   };
 }
 
@@ -28,7 +29,6 @@ export class LoginComponent {
 
   constructor(private http: HttpClient, private authService: AuthService, private router: Router) {}
 
-
   onSubmit() {
     const data = {
       username: this.username,
@@ -38,7 +38,8 @@ export class LoginComponent {
     this.http.post<LoginResponse>('http://localhost:3000/api/login', data).subscribe(
       (res: LoginResponse) => {
         console.log('User logged in successfully', res);
-        this.authService.setUsername(res.user.username);
+        // Call setUsernameAndId with both username and id
+        this.authService.setUsernameAndId(res.user.username, res.user.id);
         this.router.navigate(['/home']);
       },
       (err: HttpErrorResponse) => {

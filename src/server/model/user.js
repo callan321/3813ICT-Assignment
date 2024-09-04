@@ -40,8 +40,9 @@ class Group {
 
 // Channel model
 class Channel {
-  constructor(channelId, channelName, createdBy, messages = []) {
+  constructor(channelId, channelName, createdBy, groupId, messages = []) {
     this.channelId = channelId;
+    this.groupId = groupId;
     this.channelName = channelName;
     this.createdBy = createdBy;
     this.messages = messages;
@@ -61,27 +62,37 @@ class Message {
   }
 }
 
-// Initial users
 let users = [
-  new User(1, 'super', 'super@example.com', '123', ['Super Admin']),
-  new User(2, 'user', 'regular@example.com', 'password', ['User']),
+  new User(1, 'super', 'super@example.com', '123', ['Super Admin'], [1, 2]),
+  new User(2, 'user', 'regular@example.com', 'password', ['User'], [1]),
+  new User(3, 'developer', 'dev@example.com', 'devpass', ['User'], [2, 4]),
+  new User(4, 'designer', 'designer@example.com', 'designpass', ['User'], [3])
 ];
 
-// Initial groups, channels, and messages
 let groups = [
   new Group(1, 'General Group', 1, [1], [1, 2], [
-    new Channel(1, 'General Chat', 1, [
+    new Channel(1, 'General Chat', 1, 1, [
       new Message(1, 1, 'Hello, this is a message from the super admin!'),
       new Message(2, 2, 'Hi, this is a message from a regular user!')
     ])
   ]),
-  new Group(2, 'Development Group', 2, [2], [2], [
-    new Channel(2, 'Dev Discussions', 2, [
+  new Group(2, 'Development Group', 2, [2], [1, 3], [
+    new Channel(2, 'Dev Discussions', 2, 2, [
       new Message(3, 2, 'Let’s start discussing the new project here.')
+    ])
+  ]),
+  new Group(3, 'Design Team', 4, [4], [4], [
+    new Channel(3, 'Design Chat', 4, 3, [
+      new Message(4, 4, 'Let’s brainstorm ideas for the new project.'),
+      new Message(5, 3, 'I have some mockups ready for review.')
+    ])
+  ]),
+  new Group(4, 'Marketing Team', 3, [3], [3], [
+    new Channel(4, 'Marketing Chat', 3, 4, [
+      new Message(6, 3, 'Welcome to the Marketing Team!')
     ])
   ])
 ];
-
 module.exports = {
   User,
   Group,

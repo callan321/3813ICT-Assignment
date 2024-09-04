@@ -10,7 +10,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent }, // No sidebar for login
   {
     path: '',
-    component: SidebarComponent, // Sidebar layout for all other routes
+    component: SidebarComponent,
     canActivate: [AuthGuard],
     children: [
       { path: 'home', component: HomeComponent },

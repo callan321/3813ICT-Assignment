@@ -5,18 +5,26 @@ import { Injectable } from '@angular/core';
 })
 export class AuthService {
 
+  private userIdKey = 'userId';
   private usernameKey = 'username';
 
-  setUsername(username: string): void {
+  setUsernameAndId(username: string, userId: number): void {
     localStorage.setItem(this.usernameKey, username);
+    localStorage.setItem(this.userIdKey, userId.toString());
   }
 
   getUsername(): string | null {
     return localStorage.getItem(this.usernameKey);
   }
 
-  clearUsername(): void {
+  getUserId(): number | null {
+    const userId = localStorage.getItem(this.userIdKey);
+    return userId ? parseInt(userId, 10) : null;
+  }
+
+  clearAuthData(): void {
     localStorage.removeItem(this.usernameKey);
+    localStorage.removeItem(this.userIdKey);
   }
 
   isLoggedIn(): boolean {
