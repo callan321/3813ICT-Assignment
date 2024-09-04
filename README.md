@@ -4,7 +4,7 @@
 - [x] Login
 - [x] Side Bar
 - [x] User Auth
-- [ ] Logout
+- [x] Logout
 - [ ] Roles
   - [ ] Super Administrator
     - [ ] Promote a chat user to Group Admin role

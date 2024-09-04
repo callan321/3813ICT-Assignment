@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-import {RouterOutlet} from "@angular/router";
+import {RouterOutlet, Router} from "@angular/router";
 import {NgForOf} from "@angular/common";
 
 interface Channel {
@@ -36,7 +36,7 @@ export class SidebarComponent implements OnInit {
   selectedGroup: Group | null = null;
   filteredChannels: Channel[] = [];
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.userId = this.authService.getUserId();
@@ -62,5 +62,10 @@ export class SidebarComponent implements OnInit {
     this.selectedGroup = group;
     this.filteredChannels = group.channels;
     console.log('Selected Group:', this.selectedGroup.groupId, 'Channels:', this.filteredChannels);
+  }
+
+  logout(): void {
+    this.authService.clearAuthData();
+    this.router.navigate(['/login']); // Redirect to login page
   }
 }
