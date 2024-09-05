@@ -1,7 +1,7 @@
 <h2 class="mt-4">Groups</h2>
 <h4 class="mt-4">Create New Group</h4>
 
-<div class="form-group mt-3">
+<div class="form-group mt-3" *ngIf="isSuperAdmin() || isGroupAdmin()">
   <label for="groupName">Group Name</label>
   <input [(ngModel)]="newGroup.groupName" type="text" id="groupName" class="form-control" placeholder="Enter group name" />
 
@@ -29,7 +29,8 @@
       <ul class="list-group list-group-flush">
         <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let channel of group.channels">
           {{ channel.channelName }}
-          <button (click)="removeChannelFromGroup(group.groupId, channel.channelId)" class="btn btn-danger btn-sm">
+          <!-- Channel Delete Option (only for group admins and super admins) -->
+          <button *ngIf="isSuperAdmin() || isGroupAdmin()" (click)="removeChannelFromGroup(group.groupId, channel.channelId)" class="btn btn-danger btn-sm">
             Del
           </button>
         </li>
@@ -51,24 +52,27 @@
         <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let member of group.members">
           {{ getUsernameById(member) }}
           <span class="d-flex">
-            <!-- Upgrade to Admin Button (if not an admin) -->
-            <button *ngIf="!group.admins.includes(member)" (click)="upgradeToAdmin(group.groupId, member)" class="btn btn-sm btn-success mr-2">
-              Pro
+            <!-- Upgrade to Admin Button (only for super admins) -->
+            <button *ngIf="isSuperAdmin() && !group.admins.includes(member)" (click)="upgradeToAdmin(group.groupId, member)" class="btn btn-sm btn-success mr-2">
+              Promote to Admin
             </button>
-            <!-- Remove Member Button -->
-            <button (click)="removeUserFromGroup(group.groupId, member, 'member')" class="btn btn-sm ps-2 btn-danger">
+            <!-- Remove Member Button (only for group admin or super admin) -->
+            <button *ngIf="isSuperAdmin() || (isGroupAdmin() && group.admins.includes(authService.getUserId()))"
+                    (click)="removeUserFromGroup(group.groupId, member, 'member')"
+                    class="btn btn-sm btn-danger">
               Ban
             </button>
           </span>
         </li>
       </ul>
     </td>
-    <td>
-    <div><input [(ngModel)]="group.newChannelName" class="form-control mb-2" placeholder="New channel name" /></div>
-    <div><button (click)="addChannelToGroup(group.groupId, group.newChannelName)" class="btn btn-primary btn-sm mb-2">Create</button></div>
-    <div><button (click)="deleteGroup(group.groupId)" class="btn btn-danger btn-sm">Delete Group</button></div>
-  </td>
 
+    <!-- Actions Column (Only show for Super Admin and Group Admin) -->
+    <td *ngIf="isSuperAdmin() || (isGroupAdmin() && group.admins.includes(authService.getUserId()))">
+      <div><input [(ngModel)]="group.newChannelName" class="form-control mb-2" placeholder="New channel name" /></div>
+      <div><button (click)="addChannelToGroup(group.groupId, group.newChannelName)" class="btn btn-primary btn-sm mb-2">Create</button></div>
+      <div><button (click)="deleteGroup(group.groupId)" class="btn btn-danger btn-sm">Delete Group</button></div>
+    </td>
   </tr>
   </tbody>
 </table>

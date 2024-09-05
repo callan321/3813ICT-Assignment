@@ -32,13 +32,21 @@ export class GroupsComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    protected authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.loadGroups();
     this.loadUsers();
     this.newGroup.createdBy = this.authService.getUserId();
+  }
+
+  isSuperAdmin(): boolean {
+    return this.authService.isSuperAdmin();
+  }
+
+  isGroupAdmin(): boolean {
+    return this.authService.isGroupAdmin();
   }
 
   loadGroups(): void {
