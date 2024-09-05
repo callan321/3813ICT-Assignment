@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from "@angular/forms";
 import { NgForOf } from "@angular/common";
-import { Modal } from 'bootstrap';  // Import Bootstrap Modal
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-users',
@@ -17,8 +17,7 @@ import { Modal } from 'bootstrap';  // Import Bootstrap Modal
 export class UsersComponent implements OnInit {
   private apiUsersUrl = 'http://localhost:3000/api/users';
   users: any[] = [];
-  newUser: any = { username: '', email: '', password: '', roles: ['user'], groups: [] };
-  confirmedUserId: number | null = null;  // Store the user ID for deletion confirmation
+  confirmedUserId: number | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -30,17 +29,6 @@ export class UsersComponent implements OnInit {
     this.http.get<any[]>(this.apiUsersUrl).subscribe(
       data => this.users = data,
       error => console.error('Error fetching users', error)
-    );
-  }
-
-
-  createUser(): void {
-    this.http.post(this.apiUsersUrl, this.newUser).subscribe(
-      () => {
-        this.loadUsers();
-        this.newUser = { username: '', email: '', password: '', roles: ['user'], groups: [] };
-      },
-      error => console.error('Error creating user', error)
     );
   }
 

@@ -48,12 +48,9 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-
-
   canAccessUsers(): boolean {
     return this.authService.isSuperAdmin();
   }
-
 
 
   getGroupsForUser(userId: number): void {

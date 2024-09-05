@@ -41,7 +41,6 @@ export class GroupsComponent implements OnInit {
     this.newGroup.createdBy = this.authService.getUserId();
   }
 
-  // Fetch all groups from the server
   loadGroups(): void {
     this.http.get<any[]>(this.apiGroupsUrl).subscribe(
       data => {
@@ -52,7 +51,6 @@ export class GroupsComponent implements OnInit {
     );
   }
 
-  // Fetch all users from the server (to display usernames)
   loadUsers(): void {
     this.http.get<any[]>(this.apiUsersUrl).subscribe(
       data => this.users = data,
@@ -60,7 +58,7 @@ export class GroupsComponent implements OnInit {
     );
   }
 
-  // Create a new group
+
   createGroup(): void {
     if (!this.newGroup.groupName) {
       console.error('Group name is required!');
@@ -79,7 +77,6 @@ export class GroupsComponent implements OnInit {
     );
   }
 
-  // Delete a group by ID
   deleteGroup(groupId: number): void {
     this.http.delete(`${this.apiGroupsUrl}/${groupId}`).subscribe(
       () => this.loadGroups(),
@@ -87,7 +84,6 @@ export class GroupsComponent implements OnInit {
     );
   }
 
-  // Add a new channel to a group
   addChannelToGroup(groupId: number, newChannelName: string): void {
     if (!newChannelName) {
       console.error('Channel name is required!');
@@ -105,7 +101,6 @@ export class GroupsComponent implements OnInit {
     );
   }
 
-  // Remove a channel from a group
   removeChannelFromGroup(groupId: number, channelId: number): void {
     this.http.put(`${this.apiGroupsUrl}/${groupId}/remove-channel/${channelId}`, {}).subscribe(
       () => this.loadGroups(),
@@ -113,7 +108,6 @@ export class GroupsComponent implements OnInit {
     );
   }
 
-  // Remove a user from a group (admins or members)
   removeUserFromGroup(groupId: number, userId: number, role: string): void {
     const endpoint = role === 'admin' ? 'remove-admin' : 'remove-member';
     this.http.put(`${this.apiGroupsUrl}/${groupId}/${endpoint}/${userId}`, {}).subscribe(
