@@ -1,9 +1,9 @@
 <div class="d-flex justify-content-center align-items-center vh-100">
-  <div >
+  <div>
     <div class="card" style="width: 36rem;">
       <div class="card-body">
         <form (ngSubmit)="onSubmit()">
-          <div class="m-4"  style="display: flex; flex-direction: column; gap: 24px;">
+          <div class="m-4" style="display: flex; flex-direction: column; gap: 24px;">
             <div class="form-group">
               <label for="exampleInputEmail1">User Name</label>
               <input type="email" [(ngModel)]="username" name="username" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
@@ -15,6 +15,10 @@
             <button type="submit" class="mt-2 btn btn-primary">Submit</button>
           </div>
         </form>
+        <!-- Link to Create New Account -->
+        <div class="text-center mt-4">
+          <a [routerLink]="['/register']" class="btn btn-link">Create New Account</a>
+        </div>
       </div>
     </div>
   </div>

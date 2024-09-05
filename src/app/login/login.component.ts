@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from "../../services/auth.service";
-import { Router } from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 
 interface LoginResponse {
   message: string;
@@ -17,7 +17,8 @@ interface LoginResponse {
   standalone: true,
   imports: [
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    RouterLink
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'] // Corrected to 'styleUrls'
