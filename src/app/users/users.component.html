@@ -15,10 +15,10 @@
       <td>{{ user.id }}</td>
       <td>{{ user.username }}</td>
       <td>
-        <select [(ngModel)]="user.roles" class="form-select" (change)="changeUserRole(user.id, user.roles)">
-          <option value="Admin">super_admin</option>
-          <option value="User">group_admin</option>
-          <option value="Guest">user</option>
+        <select [(ngModel)]="user.roles[0]" class="form-select" (change)="changeUserRole(user.id, user.roles[0])">
+          <option value="super_admin">Super Admin</option>
+          <option value="group_admin">Group Admin</option>
+          <option value="user">User</option>
         </select>
       </td>
       <td class="text-nowrap">

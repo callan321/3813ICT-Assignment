@@ -8,7 +8,10 @@ const getAllUsers = (req, res) => {
 // Create a new user
 const createUser = (req, res) => {
   const newUser = req.body;
-  newUser.id = users.length + 1; // Simple ID assignment
+  newUser.id = users.length + 1;
+  newUser.roles = newUser.roles && newUser.roles.length ? newUser.roles : ['user'];
+  newUser.groups = newUser.groups || [];
+
   users.push(newUser);
   res.json({ message: 'User created', user: newUser });
 };
@@ -48,7 +51,7 @@ const getAllGroups = (req, res) => {
 // Create a new group
 const createGroup = (req, res) => {
   const newGroup = req.body;
-  newGroup.groupId = groups.length + 1; // Simple ID assignment
+  newGroup.groupId = groups.length + 1;
   groups.push(newGroup);
   res.json({ message: 'Group created', group: newGroup });
 };
@@ -151,11 +154,11 @@ const addChannelToGroup = (req, res) => {
 
   if (group) {
     const newChannel = new Channel(
-      group.channels.length + 1, // Channel ID
+      group.channels.length + 1,
       channelName,
       createdBy,
       groupId,
-      [] // Initial empty messages
+      []
     );
     group.channels.push(newChannel);
     res.json({ message: 'Channel added successfully', group });

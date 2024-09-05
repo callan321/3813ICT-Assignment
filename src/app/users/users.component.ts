@@ -17,7 +17,7 @@ import { Modal } from 'bootstrap';  // Import Bootstrap Modal
 export class UsersComponent implements OnInit {
   private apiUsersUrl = 'http://localhost:3000/api/users';
   users: any[] = [];
-  newUser: any = { username: '', email: '', password: '', roles: ['User'], groups: [] };
+  newUser: any = { username: '', email: '', password: '', roles: ['user'], groups: [] };
   confirmedUserId: number | null = null;  // Store the user ID for deletion confirmation
 
   constructor(private http: HttpClient) {}
@@ -26,7 +26,6 @@ export class UsersComponent implements OnInit {
     this.loadUsers();
   }
 
-  // Fetch all users from the backend
   loadUsers(): void {
     this.http.get<any[]>(this.apiUsersUrl).subscribe(
       data => this.users = data,
@@ -34,18 +33,18 @@ export class UsersComponent implements OnInit {
     );
   }
 
-  // Create a new user
+
   createUser(): void {
     this.http.post(this.apiUsersUrl, this.newUser).subscribe(
       () => {
         this.loadUsers();
-        this.newUser = { username: '', email: '', password: '', roles: ['User'], groups: [] };
+        this.newUser = { username: '', email: '', password: '', roles: ['user'], groups: [] };
       },
       error => console.error('Error creating user', error)
     );
   }
 
-  // Set the user ID and open confirmation modal
+
   confirmDelete(userId: number): void {
     this.confirmedUserId = userId;
     const modalElement = document.getElementById('deleteConfirmationModal') as HTMLElement;
@@ -53,7 +52,7 @@ export class UsersComponent implements OnInit {
     modal.show();
   }
 
-  // Delete a user after confirmation
+
   deleteUser(userId: number | null): void {
     if (userId !== null) {
       this.http.delete(`${this.apiUsersUrl}/${userId}`).subscribe(
@@ -63,13 +62,13 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  // Update the user role
-  changeUserRole(userId: number, newRole: string[]): void {
-    const updatedUser = { roles: newRole };
+
+  changeUserRole(userId: number, newRole: string): void {
+    const updatedUser = { roles: [newRole] };
 
     this.http.put(`${this.apiUsersUrl}/${userId}`, updatedUser).subscribe(
       () => {
-        console.log(`User ${userId} roles updated to: ${newRole}`);
+        console.log(`User ${userId} role updated to: ${newRole}`);
         this.loadUsers();
       },
       error => console.error('Error updating user role', error)

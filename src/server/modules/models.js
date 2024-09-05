@@ -63,10 +63,10 @@ class Message {
 }
 
 let users = [
-  new User(1, 'super', 'super@example.com', '123', ['Super Admin'], [1, 2]),
-  new User(2, 'user', 'regular@example.com', 'password', ['User'], [1]),
-  new User(3, 'developer', 'dev@example.com', 'devpass', ['User'], [2, 4]),
-  new User(4, 'designer', 'designer@example.com', 'designpass', ['User'], [3])
+  new User(1, 'super', 'super@example.com', '123', ['super_admin'], [1, 2]),
+  new User(2, 'user', 'regular@example.com', 'password', ['user'], [1]),
+  new User(3, 'developer', 'dev@example.com', 'devpass', ['user'], [2, 4]),
+  new User(4, 'designer', 'designer@example.com', 'designpass', ['user'], [3])
 ];
 
 let groups = [
@@ -94,6 +94,7 @@ let groups = [
     ])
   ])
 ];
+
 module.exports = {
   User,
   Group,
