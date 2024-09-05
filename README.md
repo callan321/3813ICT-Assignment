@@ -65,13 +65,13 @@ ng serve
 - [x] Delete Admins
 
 ### Groups CRUD
-- [ ] Create Groups
-- [ ] Read Groups
-- [ ] Update Groups
-- [ ] Delete Groups
+- [x] Create Groups
+- [x] Read Groups
+- [x] Update Groups
+- [x] Delete Groups
 
 ### Channels CRUD
-- [ ] Create Channels
+- [x] Create Channels
 - [ ] Read Channels
 - [ ] Update Channels
-- [ ] Delete Channels
+- [x] Delete Channels

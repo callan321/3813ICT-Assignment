@@ -18,7 +18,7 @@ class Group {
     this.createdBy = createdBy;
     this.admins = admins;
     this.members = members;
-    this.channels = channels;
+    this.channels = channels || [];
   }
 
   addMember(userId) {

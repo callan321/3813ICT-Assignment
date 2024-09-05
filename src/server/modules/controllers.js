@@ -110,14 +110,12 @@ const removeAdminFromGroup = (req, res) => {
   }
 };
 
-// Remove a channel from the group
 const removeChannelFromGroup = (req, res) => {
   const groupId = parseInt(req.params.groupId);
   const channelId = parseInt(req.params.channelId);
   const group = groups.find(group => group.groupId === groupId);
 
   if (group) {
-    // Filter out only the channel that matches the provided channelId
     group.channels = group.channels.filter(channel => channel.channelId !== channelId);
     res.json({ message: 'Channel removed from group', group });
   } else {
@@ -131,9 +129,7 @@ const upgradeToAdmin = (req, res) => {
   const group = groups.find(group => group.groupId === groupId);
 
   if (group) {
-    // Check if the user is a member
     if (group.members.includes(userId)) {
-      // Remove the user from members and add to admins
       group.members = group.members.filter(member => member !== userId);
       if (!group.admins.includes(userId)) {
         group.admins.push(userId);
@@ -152,6 +148,9 @@ const addChannelToGroup = (req, res) => {
   const { channelName, createdBy } = req.body;
   const group = groups.find(group => group.groupId === groupId);
 
+  if (!Array.isArray(group.channels)) {
+    group.channels = [];
+  }
   if (group) {
     const newChannel = new Channel(
       group.channels.length + 1,
@@ -167,6 +166,7 @@ const addChannelToGroup = (req, res) => {
   }
 };
 
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -181,5 +181,4 @@ module.exports = {
   removeChannelFromGroup,
   upgradeToAdmin,
   addChannelToGroup,
-
 };
