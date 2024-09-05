@@ -15,17 +15,20 @@
   <tr *ngFor="let group of groups">
     <td>{{ group.groupId }}</td>
     <td>{{ group.groupName }}</td>
+
+    <!-- Channels column -->
     <td>
       <ul class="list-group list-group-flush">
-        <li class="list-group-item" *ngFor="let channel of group.channels">
+        <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let channel of group.channels">
           {{ channel.channelName }}
-          <!-- Remove Channel Button -->
           <button (click)="removeChannelFromGroup(group.groupId, channel.channelId)" class="btn btn-danger btn-sm">
-            Remove Channel
+            Del
           </button>
         </li>
       </ul>
     </td>
+
+    <!-- Admins column -->
     <td>
       <ul class="list-group list-group-flush">
         <li class="list-group-item" *ngFor="let admin of group.admins">
@@ -33,33 +36,31 @@
         </li>
       </ul>
     </td>
+
+    <!-- Members column -->
     <td>
       <ul class="list-group list-group-flush">
-        <li class="list-group-item" *ngFor="let member of group.members">
+        <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let member of group.members">
           {{ getUsernameById(member) }}
-          <!-- Upgrade to Admin Button -->
-          <button *ngIf="!group.admins.includes(member)" (click)="upgradeToAdmin(group.groupId, member)" class="btn btn-sm btn-success">
-            Upgrade to Admin
-          </button>
-          <!-- Remove Member Button -->
-          <button (click)="removeUserFromGroup(group.groupId, member, 'member')" class="btn btn-sm btn-danger">
-            Remove Member
-          </button>
+          <span class="d-flex">
+            <!-- Upgrade to Admin Button (if not an admin) -->
+            <button *ngIf="!group.admins.includes(member)" (click)="upgradeToAdmin(group.groupId, member)" class="btn btn-sm btn-success mr-2">
+              Pro
+            </button>
+            <!-- Remove Member Button -->
+            <button (click)="removeUserFromGroup(group.groupId, member, 'member')" class="btn btn-sm ps-2 btn-danger">
+              Ban
+            </button>
+          </span>
         </li>
       </ul>
     </td>
     <td>
-      <!-- Action Buttons (Add New Channel, Delete Group) -->
+    <div><input [(ngModel)]="group.newChannelName" class="form-control mb-2" placeholder="New channel name" /></div>
+    <div><button (click)="addChannelToGroup(group.groupId, group.newChannelName)" class="btn btn-primary btn-sm mb-2">Create</button></div>
+    <div><button (click)="deleteGroup(group.groupId)" class="btn btn-danger btn-sm">Delete Group</button></div>
+  </td>
 
-      <!-- Add New Channel Section -->
-      <div>
-        <input [(ngModel)]="group.newChannelName" class="form-control mb-2" placeholder="New channel name" />
-        <button (click)="addChannelToGroup(group.groupId, group.newChannelName)" class="btn btn-primary mb-2">Add Channel</button>
-      </div>
-
-      <!-- Delete Group -->
-      <button (click)="deleteGroup(group.groupId)" class="btn btn-danger">Delete Group</button>
-    </td>
   </tr>
   </tbody>
 </table>
