@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { NgForOf } from '@angular/common';
-import { AuthService } from '../../services/auth.service';  // Adjust path if necessary
+import { NgForOf, CommonModule } from '@angular/common';
+import {AuthService} from "../../services/auth.service"; // Import CommonModule for NgIf
 
 @Component({
   selector: 'app-groups',
@@ -10,7 +10,8 @@ import { AuthService } from '../../services/auth.service';  // Adjust path if ne
   standalone: true,
   imports: [
     FormsModule,
-    NgForOf
+    NgForOf,
+    CommonModule // Add CommonModule for structural directives like *ngIf and *ngFor
   ],
   styleUrls: ['./groups.component.css']
 })
