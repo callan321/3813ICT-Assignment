@@ -48,4 +48,8 @@ export class AuthService {
   isSuperAdmin(): boolean {
     return this.hasRole('super_admin');
   }
+
+  isGroupAdmin(): boolean {
+    return this.hasRole('group_admin');
+  }
 }
