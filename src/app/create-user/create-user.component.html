@@ -6,17 +6,14 @@
           <div class="m-4" style="display: flex; flex-direction: column; gap: 24px;">
             <div class="form-group">
               <label for="username">User Name</label>
-              <!-- Correct usage of ngModel for username -->
               <input type="text" [(ngModel)]="user.username" name="username" class="form-control" id="username" required>
             </div>
             <div class="form-group">
               <label for="email">Email address</label>
-              <!-- Correct usage of ngModel for email -->
               <input type="email" [(ngModel)]="user.email" name="email" class="form-control" id="email" required>
             </div>
             <div class="form-group">
               <label for="password">Password</label>
-              <!-- Correct usage of ngModel for password -->
               <input type="password" [(ngModel)]="user.password" name="password" class="form-control" id="password" required>
             </div>
             <button type="submit" class="mt-2 btn btn-primary">Create User</button>
