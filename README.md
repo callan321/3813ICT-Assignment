@@ -26,13 +26,109 @@ ng serve
 - Frontend: http://localhost:4200
 
 
+# Data Structures
+
+### User
+type User = {
+id: number;
+username: string;
+email: string;
+password: string;
+roles: string[];
+groups: number[];
+};
+
+### Group
+type Group = {
+groupId: number;
+groupName: string;
+createdBy: number;
+admins: number[];
+members: number[];
+channels: Channel[];
+};
+
+### Channel
+type Channel = {
+channelId: number;
+channelName: string;
+createdBy: number;
+groupId: number;
+messages: Message[];
+};
+
+### Message
+type Message = {
+messageId: number;
+senderId: number;
+content: string;
+};
+
+# API Endpoints
+
+## Users CRUD Endpoints
+
+- `GET /api/users`  
+  Retrieve all users.
+
+- `POST /api/users`  
+  Create a new user.
+
+- `PUT /api/users/:id`  
+  Update a user by ID.
+
+- `DELETE /api/users/:id`  
+  Delete a user by ID.
+
+---
+
+## Groups CRUD Endpoints
+
+- `GET /api/groups`  
+  Retrieve all groups.
+
+- `POST /api/groups`  
+  Create a new group.
+
+- `PUT /api/groups/:groupId`  
+  Update a group by ID.
+
+- `DELETE /api/groups/:groupId`  
+  Delete a group by ID.
+
+---
+
+### Group Member/Admin/Channel Management
+
+- `PUT /api/groups/:groupId/remove-member/:userId`  
+  Remove a user from a group.
+
+- `PUT /api/groups/:groupId/remove-admin/:adminId`  
+  Remove an admin from a group.
+
+- `PUT /api/groups/:groupId/remove-channel/:channelId`  
+  Remove a channel from a group.
+
+- `PUT /api/groups/:groupId/upgrade-to-admin/:userId`  
+  Upgrade a user to admin in a group.
+
+- `POST /api/groups/:groupId/add-channel`  
+  Add a channel to a group.
+
+---
+
+## Login Endpoint
+
+- `POST /api/login`  
+  Login a user.
+
+---
+
 ## Requirements
 - [x] Login
 - [x] Side Bar
 - [x] User Auth
 - [x] Logout
-
-### Roles 
 
 #### Super Administrator
 
@@ -57,21 +153,3 @@ ng serve
 - [ ] Register interest in a group
 - [ ] Leave a group
 - [ ] Delete themselves
-
-### Admin CRUD
-- [x] Create Admins
-- [x] Read Admins
-- [x] Update Admins
-- [x] Delete Admins
-
-### Groups CRUD
-- [x] Create Groups
-- [x] Read Groups
-- [x] Update Groups
-- [x] Delete Groups
-
-### Channels CRUD
-- [x] Create Channels
-- [ ] Read Channels
-- [ ] Update Channels
-- [x] Delete Channels
