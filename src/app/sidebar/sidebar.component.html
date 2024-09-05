@@ -8,11 +8,12 @@
           <i class="bi bi-house-door-fill fs-4"></i>
         </a>
       </li>
-      <li class="nav-item mb-2">
+      <li class="nav-item mb-2" *ngIf="canAccessUsers()">
         <a [routerLink]="['/users']" class="nav-link text-white py-3">
           <i class="bi bi-person-fill fs-4"></i>
         </a>
       </li>
+
       <li class="nav-item mb-2">
         <a [routerLink]="['/groups']" class="nav-link text-white py-3">
           <i class="bi bi-people-fill fs-4"></i>

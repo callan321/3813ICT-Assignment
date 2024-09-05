@@ -2,13 +2,14 @@ import { Component } from '@angular/core';
 import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from "../../services/auth.service";
-import {Router, RouterLink} from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 
 interface LoginResponse {
   message: string;
   user: {
     username: string;
-    id: number; // Add the user ID here
+    id: number;
+    roles: string[]; // Add roles here
   };
 }
 
@@ -21,7 +22,7 @@ interface LoginResponse {
     RouterLink
   ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'] // Corrected to 'styleUrls'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
 
@@ -39,8 +40,7 @@ export class LoginComponent {
     this.http.post<LoginResponse>('http://localhost:3000/api/login', data).subscribe(
       (res: LoginResponse) => {
         console.log('User logged in successfully', res);
-        // Call setUsernameAndId with both username and id
-        this.authService.setUsernameAndId(res.user.username, res.user.id);
+        this.authService.saveUserSessionData(res.user.username, res.user.id, res.user.roles);
         this.router.navigate(['/home']);
       },
       (err: HttpErrorResponse) => {

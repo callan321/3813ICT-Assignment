@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { RouterOutlet, Router, RouterLink } from "@angular/router";
-import { NgForOf } from "@angular/common";
+import {NgForOf, NgIf} from "@angular/common";
 import * as bootstrap from 'bootstrap';  // Import Bootstrap Modal
 
 interface Channel {
@@ -27,7 +27,8 @@ interface Group {
   imports: [
     RouterOutlet,
     NgForOf,
-    RouterLink
+    RouterLink,
+    NgIf
   ],
   styleUrls: ['./sidebar.component.css']
 })
@@ -46,6 +47,14 @@ export class SidebarComponent implements OnInit {
       this.getGroupsForUser(this.userId);
     }
   }
+
+
+
+  canAccessUsers(): boolean {
+    return this.authService.isSuperAdmin();
+  }
+
+
 
   getGroupsForUser(userId: number): void {
     this.http.get<Group[]>(this.apiGroupsUrl).subscribe(
