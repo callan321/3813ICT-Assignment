@@ -1,4 +1,4 @@
-const { users, groups } = require('./models');
+const { users, groups, Channel} = require('./models');
 
 // Get all users
 const getAllUsers = (req, res) => {
@@ -144,6 +144,26 @@ const upgradeToAdmin = (req, res) => {
   }
 };
 
+const addChannelToGroup = (req, res) => {
+  const groupId = parseInt(req.params.groupId);
+  const { channelName, createdBy } = req.body;
+  const group = groups.find(group => group.groupId === groupId);
+
+  if (group) {
+    const newChannel = new Channel(
+      group.channels.length + 1, // Channel ID
+      channelName,
+      createdBy,
+      groupId,
+      [] // Initial empty messages
+    );
+    group.channels.push(newChannel);
+    res.json({ message: 'Channel added successfully', group });
+  } else {
+    res.status(404).json({ message: 'Group not found' });
+  }
+};
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -157,4 +177,6 @@ module.exports = {
   removeAdminFromGroup,
   removeChannelFromGroup,
   upgradeToAdmin,
+  addChannelToGroup,
+
 };

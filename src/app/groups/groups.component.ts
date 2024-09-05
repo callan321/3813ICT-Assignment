@@ -18,9 +18,17 @@ import { CommonModule, NgForOf } from "@angular/common";
 export class GroupsComponent implements OnInit {
   private apiGroupsUrl = 'http://localhost:3000/api/groups';
   private apiUsersUrl = 'http://localhost:3000/api/users';
+
   groups: any[] = [];
   users: any[] = [];
-  newGroup: any = { groupName: '', createdBy: 0, admins: [], members: [] };
+
+  // Initialize newGroup object for creating groups
+  newGroup: any = {
+    groupName: '',
+    createdBy: 0,
+    admins: [],
+    members: []
+  };
 
   constructor(
     private http: HttpClient,
@@ -30,18 +38,21 @@ export class GroupsComponent implements OnInit {
   ngOnInit(): void {
     this.loadGroups();
     this.loadUsers();
-    this.setCurrentUserAsCreator();
+    this.newGroup.createdBy = this.authService.getUserId();
   }
 
-  // Fetch existing groups from the server
+  // Fetch all groups from the server
   loadGroups(): void {
     this.http.get<any[]>(this.apiGroupsUrl).subscribe(
-      data => this.groups = data,
+      data => {
+        this.groups = data;
+        this.groups.forEach(group => group.newChannelName = '');
+      },
       error => console.error('Error fetching groups', error)
     );
   }
 
-  // Fetch users (for displaying usernames)
+  // Fetch all users from the server (to display usernames)
   loadUsers(): void {
     this.http.get<any[]>(this.apiUsersUrl).subscribe(
       data => this.users = data,
@@ -62,17 +73,35 @@ export class GroupsComponent implements OnInit {
     this.http.post(this.apiGroupsUrl, this.newGroup).subscribe(
       () => {
         this.loadGroups();
-        this.newGroup = { groupName: '', createdBy: this.authService.getUserId(), admins: [], members: [] };
+        this.newGroup = { groupName: '', createdBy: this.authService.getUserId(), admins: [], members: [] }; // Reset form after creating
       },
       error => console.error('Error creating group', error)
     );
   }
 
-  // Delete a group
+  // Delete a group by ID
   deleteGroup(groupId: number): void {
     this.http.delete(`${this.apiGroupsUrl}/${groupId}`).subscribe(
       () => this.loadGroups(),
       error => console.error('Error deleting group', error)
+    );
+  }
+
+  // Add a new channel to a group
+  addChannelToGroup(groupId: number, newChannelName: string): void {
+    if (!newChannelName) {
+      console.error('Channel name is required!');
+      return;
+    }
+
+    const channelData = {
+      channelName: newChannelName,
+      createdBy: this.authService.getUserId()
+    };
+
+    this.http.post(`${this.apiGroupsUrl}/${groupId}/add-channel`, channelData).subscribe(
+      () => this.loadGroups(),
+      error => console.error('Error adding channel', error)
     );
   }
 
@@ -101,19 +130,9 @@ export class GroupsComponent implements OnInit {
     );
   }
 
-  // Fetch username based on ID
+  // Fetch username based on user ID
   getUsernameById(userId: number): string {
     const user = this.users.find(u => u.id === userId);
     return user ? user.username : 'Unknown';
-  }
-
-  // Get logged-in user's ID and set them as creator
-  setCurrentUserAsCreator(): void {
-    const userId = this.authService.getUserId();
-    if (userId) {
-      this.newGroup.createdBy = userId;
-    } else {
-      console.error('No user logged in!');
-    }
   }
 }
