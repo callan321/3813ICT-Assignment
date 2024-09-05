@@ -123,6 +123,31 @@ content: string;
   Login a user.
 
 ---
+# Angular reticular 
+## Components
+- **LoginComponent:** Handles the user login functionality, including the form to input credentials and the logic to submit the login data.
+- **HomeComponent:** Acts as the landing page for authenticated users, typically containing dashboard-related information.
+- **SidebarComponent:** This component is responsible for rendering the navigation sidebar, which contains links to various parts of the app like users, groups, and logout functionality.
+- **GroupsComponent:** Displays and manages group-related information such as listing available groups, adding channels, and managing group members.
+- **UsersComponent:** Displays and manages user-related data, including CRUD operations on users and roles management.
+- **CreateUserComponent:** Handles user registration and creating new users within the app.
+
+## Services
+
+### AuthService
+
+- User login session storage (storing userId, username, and roles in localStorage).
+- Retrieving user roles to check permissions.
+- Session clearing on logout.
+- Role-based access control, such as determining if the user is a super_admin or group_admin.
+
+
+### AuthGuard 
+Protect routes from unauthenticated users 
+
+AdminGuard and GroupGuard were not fully implemented but were designed to protect routes depending on roles. 
+
+---
 
 ## Requirements
 - [x] Login
