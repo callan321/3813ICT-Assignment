@@ -1,4 +1,12 @@
 <h2 class="mt-4">Groups</h2>
+<h4 class="mt-4">Create New Group</h4>
+
+<div class="form-group mt-3">
+  <label for="groupName">Group Name</label>
+  <input [(ngModel)]="newGroup.groupName" type="text" id="groupName" class="form-control" placeholder="Enter group name" />
+
+  <button (click)="createGroup()" class="btn btn-primary mt-3">Create Group</button>
+</div>
 
 <table class="table table-bordered mt-3" *ngIf="groups.length > 0">
   <thead>
