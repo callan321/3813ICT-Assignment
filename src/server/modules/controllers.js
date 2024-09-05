@@ -80,6 +80,48 @@ const deleteGroup = (req, res) => {
   }
 };
 
+const removeUserFromGroup = (req, res) => {
+  const groupId = parseInt(req.params.groupId);
+  const userId = parseInt(req.params.userId);
+  const group = groups.find(group => group.groupId === groupId);
+
+  if (group) {
+    group.members = group.members.filter(member => member !== userId);
+    res.json({ message: 'User removed from group members', group });
+  } else {
+    res.status(404).json({ message: 'Group not found' });
+  }
+};
+
+// Remove an admin from the group
+const removeAdminFromGroup = (req, res) => {
+  const groupId = parseInt(req.params.groupId);
+  const adminId = parseInt(req.params.adminId);
+  const group = groups.find(group => group.groupId === groupId);
+
+  if (group) {
+    group.admins = group.admins.filter(admin => admin !== adminId);
+    res.json({ message: 'Admin removed from group', group });
+  } else {
+    res.status(404).json({ message: 'Group not found' });
+  }
+};
+
+// Remove a channel from the group
+const removeChannelFromGroup = (req, res) => {
+  const groupId = parseInt(req.params.groupId);
+  const channelId = parseInt(req.params.channelId);
+  const group = groups.find(group => group.groupId === groupId);
+
+  if (group) {
+    // Filter out only the channel that matches the provided channelId
+    group.channels = group.channels.filter(channel => channel.channelId !== channelId);
+    res.json({ message: 'Channel removed from group', group });
+  } else {
+    res.status(404).json({ message: 'Group not found' });
+  }
+};
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -88,5 +130,8 @@ module.exports = {
   getAllGroups,
   createGroup,
   updateGroup,
-  deleteGroup
+  deleteGroup,
+  removeUserFromGroup,
+  removeAdminFromGroup,
+  removeChannelFromGroup,
 };

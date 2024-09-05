@@ -18,7 +18,8 @@
     <td>
       <ul class="list-group list-group-flush">
         <li class="list-group-item" *ngFor="let channel of group.channels">
-          {{ channel.channelName }} <!-- Correct property for channel name -->
+          {{ channel?.channelName }}
+          <button (click)="removeChannelFromGroup(group.groupId, channel.channelId)" class="btn btn-sm btn-danger">Remove</button>
         </li>
       </ul>
     </td>
@@ -26,6 +27,7 @@
       <ul class="list-group list-group-flush">
         <li class="list-group-item" *ngFor="let admin of group.admins">
           {{ getUsernameById(admin) }}
+          <button (click)="removeUserFromGroup(group.groupId, admin, 'admin')" class="btn btn-sm btn-danger">Remove</button>
         </li>
       </ul>
     </td>
@@ -33,11 +35,12 @@
       <ul class="list-group list-group-flush">
         <li class="list-group-item" *ngFor="let member of group.members">
           {{ getUsernameById(member) }}
+          <button (click)="removeUserFromGroup(group.groupId, member, 'member')" class="btn btn-sm btn-danger">Remove</button>
         </li>
       </ul>
     </td>
     <td>
-      <button (click)="deleteGroup(group.groupId)" class="btn btn-danger">Delete</button>
+      <button (click)="deleteGroup(group.groupId)" class="btn btn-danger">Delete Group</button>
     </td>
   </tr>
   </tbody>

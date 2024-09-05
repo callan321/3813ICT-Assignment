@@ -75,7 +75,7 @@ let groups = [
       new Message(1, 1, 'Hello, this is a message from the super admin!'),
       new Message(2, 2, 'Hi, this is a message from a regular user!')
     ]),
-    new Channel(1, 'Empty Chat', 1, 1, [])
+    new Channel(3, 'Empty Chat', 1, 1, [])
   ]),
   new Group(2, 'Development Group', 2, [2], [1, 3], [
     new Channel(2, 'Dev Discussions', 2, 2, [

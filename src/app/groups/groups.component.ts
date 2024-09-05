@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
-import { NgForOf, CommonModule } from '@angular/common';
-import {AuthService} from "../../services/auth.service"; // Import CommonModule for NgIf
+import { HttpClient } from "@angular/common/http";
+import { AuthService } from "../../services/auth.service";
+import { Component, OnInit } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { CommonModule, NgForOf } from "@angular/common";
 
 @Component({
   selector: 'app-groups',
   templateUrl: './groups.component.html',
-  standalone: true,
+  standalone: true, // Assuming you're using Standalone Components in Angular
   imports: [
     FormsModule,
     NgForOf,
@@ -74,6 +74,23 @@ export class GroupsComponent implements OnInit {
     this.http.delete(`${this.apiGroupsUrl}/${groupId}`).subscribe(
       () => this.loadGroups(),
       error => console.error('Error deleting group', error)
+    );
+  }
+
+  // Remove a channel from a group
+  removeChannelFromGroup(groupId: number, channelId: number): void {
+    this.http.put(`${this.apiGroupsUrl}/${groupId}/remove-channel/${channelId}`, {}).subscribe(
+      () => this.loadGroups(),
+      error => console.error('Error removing channel from group', error)
+    );
+  }
+
+  // Remove a user from a group (admins or members)
+  removeUserFromGroup(groupId: number, userId: number, role: string): void {
+    const endpoint = role === 'admin' ? 'remove-admin' : 'remove-member';
+    this.http.put(`${this.apiGroupsUrl}/${groupId}/${endpoint}/${userId}`, {}).subscribe(
+      () => this.loadGroups(),
+      error => console.error(`Error removing ${role} from group`, error)
     );
   }
 
