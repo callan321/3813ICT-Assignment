@@ -35,7 +35,17 @@
       <ul class="list-group list-group-flush">
         <li class="list-group-item" *ngFor="let member of group.members">
           {{ getUsernameById(member) }}
-          <button (click)="removeUserFromGroup(group.groupId, member, 'member')" class="btn btn-sm btn-danger">Remove</button>
+          <!-- Remove member button -->
+          <button (click)="removeUserFromGroup(group.groupId, member, 'member')" class="btn btn-sm btn-danger">
+            Remove Member
+          </button>
+
+          <!-- Upgrade to Admin button, visible only if the user is not already an admin -->
+          <button *ngIf="!group.admins.includes(member)"
+                  (click)="upgradeToAdmin(group.groupId, member)"
+                  class="btn btn-sm btn-success">
+            Promote
+          </button>
         </li>
       </ul>
     </td>

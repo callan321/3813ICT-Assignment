@@ -7,30 +7,30 @@ import { CommonModule, NgForOf } from "@angular/common";
 @Component({
   selector: 'app-groups',
   templateUrl: './groups.component.html',
-  standalone: true, // Assuming you're using Standalone Components in Angular
+  standalone: true,
   imports: [
     FormsModule,
     NgForOf,
-    CommonModule // Add CommonModule for structural directives like *ngIf and *ngFor
+    CommonModule
   ],
   styleUrls: ['./groups.component.css']
 })
 export class GroupsComponent implements OnInit {
   private apiGroupsUrl = 'http://localhost:3000/api/groups';
-  private apiUsersUrl = 'http://localhost:3000/api/users';  // Add the users API endpoint
+  private apiUsersUrl = 'http://localhost:3000/api/users';
   groups: any[] = [];
   users: any[] = [];
   newGroup: any = { groupName: '', createdBy: 0, admins: [], members: [] };
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService  // Inject AuthService to get the logged-in user
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.loadGroups();
     this.loadUsers();
-    this.setCurrentUserAsCreator();  // Set the current logged-in user as group creator
+    this.setCurrentUserAsCreator();
   }
 
   // Fetch existing groups from the server
@@ -56,14 +56,13 @@ export class GroupsComponent implements OnInit {
       return;
     }
 
-    // Add the creator as admin and member
     this.newGroup.admins = [this.newGroup.createdBy];
     this.newGroup.members = [this.newGroup.createdBy];
 
     this.http.post(this.apiGroupsUrl, this.newGroup).subscribe(
       () => {
-        this.loadGroups(); // Reload the groups after creating a new one
-        this.newGroup = { groupName: '', createdBy: this.authService.getUserId(), admins: [], members: [] }; // Reset form
+        this.loadGroups();
+        this.newGroup = { groupName: '', createdBy: this.authService.getUserId(), admins: [], members: [] };
       },
       error => console.error('Error creating group', error)
     );
@@ -91,6 +90,14 @@ export class GroupsComponent implements OnInit {
     this.http.put(`${this.apiGroupsUrl}/${groupId}/${endpoint}/${userId}`, {}).subscribe(
       () => this.loadGroups(),
       error => console.error(`Error removing ${role} from group`, error)
+    );
+  }
+
+  // Upgrade a member to admin
+  upgradeToAdmin(groupId: number, userId: number): void {
+    this.http.put(`${this.apiGroupsUrl}/${groupId}/upgrade-to-admin/${userId}`, {}).subscribe(
+      () => this.loadGroups(),
+      error => console.error('Error upgrading member to admin', error)
     );
   }
 

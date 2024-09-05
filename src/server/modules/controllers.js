@@ -122,6 +122,28 @@ const removeChannelFromGroup = (req, res) => {
   }
 };
 
+const upgradeToAdmin = (req, res) => {
+  const groupId = parseInt(req.params.groupId);
+  const userId = parseInt(req.params.userId);
+  const group = groups.find(group => group.groupId === groupId);
+
+  if (group) {
+    // Check if the user is a member
+    if (group.members.includes(userId)) {
+      // Remove the user from members and add to admins
+      group.members = group.members.filter(member => member !== userId);
+      if (!group.admins.includes(userId)) {
+        group.admins.push(userId);
+      }
+      res.json({ message: 'User upgraded to admin', group });
+    } else {
+      res.status(404).json({ message: 'User is not a member of this group' });
+    }
+  } else {
+    res.status(404).json({ message: 'Group not found' });
+  }
+};
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -134,4 +156,5 @@ module.exports = {
   removeUserFromGroup,
   removeAdminFromGroup,
   removeChannelFromGroup,
+  upgradeToAdmin,
 };

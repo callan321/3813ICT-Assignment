@@ -12,7 +12,7 @@ const {
   getAllGroups,
   createGroup,
   updateGroup,
-  deleteGroup, removeUserFromGroup, removeAdminFromGroup, removeChannelFromGroup
+  deleteGroup, removeUserFromGroup, removeAdminFromGroup, removeChannelFromGroup, upgradeToAdmin
 } = require('./modules/controllers'); // Adjusted path for controllers
 
 const { loginUser } = require('./modules/auth'); // Import login logic from auth module
@@ -40,9 +40,10 @@ app.delete('/api/groups/:groupId', deleteGroup);
 app.put('/api/groups/:groupId/remove-member/:userId', removeUserFromGroup);
 app.put('/api/groups/:groupId/remove-admin/:adminId', removeAdminFromGroup);
 app.put('/api/groups/:groupId/remove-channel/:channelId', removeChannelFromGroup);
+app.put('/api/groups/:groupId/upgrade-to-admin/:userId', upgradeToAdmin);
 
 // Login Endpoint
-app.post('/api/login', loginUser); // Login route using auth.js
+app.post('/api/login', loginUser);
 
 // Start the server
 app.listen(port, () => {

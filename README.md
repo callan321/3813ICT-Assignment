@@ -39,15 +39,15 @@ ng serve
 - [x] Promote a chat user to Group Admin role
 - [x] Remove any chat users
 - [x] Upgrade a chat user to Super Admin role
-- [ ] Perform all functions of a Group Administrator
+- [x] Perform all functions of a Group Administrator
 
 #### Group Administrator
 
-- [ ] Create groups
-- [ ] Create channels within groups
-- [ ] Remove groups, channels, and chat users from groups they administer
-- [ ] Delete a chat user (from a group they administer)
-- [ ] Modify/delete a group they created
+- [x] Create groups
+- [x] Create channels within groups
+- [x] Remove groups, channels, and chat users from groups they administer
+- [x] Delete a chat user (from a group they administer)
+- [x] Modify/delete a group they created
 - [ ] Ban a user from a channel and report to super admins
 
 #### Regular User
