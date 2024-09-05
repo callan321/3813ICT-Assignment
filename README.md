@@ -36,9 +36,9 @@ ng serve
 
 #### Super Administrator
 
-- [ ] Promote a chat user to Group Admin role
-- [ ] Remove any chat users
-- [ ] Upgrade a chat user to Super Admin role
+- [x] Promote a chat user to Group Admin role
+- [x] Remove any chat users
+- [x] Upgrade a chat user to Super Admin role
 - [ ] Perform all functions of a Group Administrator
 
 #### Group Administrator
@@ -59,10 +59,10 @@ ng serve
 - [ ] Delete themselves
 
 ### Admin CRUD
-- [ ] Create Admins
-- [ ] Read Admins
-- [ ] Update Admins
-- [ ] Delete Admins
+- [x] Create Admins
+- [x] Read Admins
+- [x] Update Admins
+- [x] Delete Admins
 
 ### Groups CRUD
 - [ ] Create Groups
