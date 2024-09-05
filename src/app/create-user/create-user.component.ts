@@ -9,7 +9,7 @@ export interface User {
   username: string;
   email: string;
   password: string;
-  roles?: string[];
+  roles: string[];
   groups?: number[];
 }
 
@@ -29,7 +29,7 @@ export class CreateUserComponent {
     username: '',
     email: '',
     password: '',
-    roles: ['User'],
+    roles: ['user'],
     groups: []
   };
 
