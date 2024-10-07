@@ -37,6 +37,8 @@ export class LoginComponent {
       password: this.password
     };
 
+    console.log('Login attempt with data:', data);  // <-- Log the form data
+
     this.http.post<LoginResponse>('http://localhost:3000/api/login', data).subscribe(
       (res: LoginResponse) => {
         console.log('User logged in successfully', res);
@@ -44,8 +46,9 @@ export class LoginComponent {
         this.router.navigate(['/home']);
       },
       (err: HttpErrorResponse) => {
-        console.log('There was an error during the login process', err.error);
+        console.error('There was an error during the login process', err.error);  // Changed log to error
       }
     );
   }
+
 }

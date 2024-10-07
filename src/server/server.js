@@ -12,13 +12,22 @@ const {
   getAllGroups,
   createGroup,
   updateGroup,
-  deleteGroup, removeUserFromGroup, removeAdminFromGroup, removeChannelFromGroup, upgradeToAdmin, addChannelToGroup
+  deleteGroup,
+  removeUserFromGroup,
+  removeAdminFromGroup,
+  removeChannelFromGroup,
+  upgradeToAdmin,
+  addChannelToGroup
 } = require('./modules/controllers'); // Adjusted path for controllers
-
 const { loginUser } = require('./modules/auth'); // Import login logic from auth module
-
+console.log(loginUser);
+// Middleware
 app.use(cors());
 app.use(express.json());
+app.use(cors({
+  origin: 'http://localhost:4200', // Replace with the Angular app's URL
+  credentials: true
+}));
 
 // Status endpoint
 app.get('/', (req, res) => {
@@ -45,6 +54,12 @@ app.post('/api/groups/:groupId/add-channel', addChannelToGroup);
 
 // Login Endpoint
 app.post('/api/login', loginUser);
+
+
+// Fallback for undefined routes
+app.use((req, res) => {
+  res.status(404).json({ message: 'Endpoint not found' });
+});
 
 // Start the server
 app.listen(port, () => {

@@ -56,9 +56,11 @@ export class SidebarComponent implements OnInit {
   getGroupsForUser(userId: number): void {
     this.http.get<Group[]>(this.apiGroupsUrl).subscribe(
       (groupsData) => {
+        console.log('Fetched Groups:', groupsData); // Add this for debugging
         this.groups = groupsData.filter(group =>
           group.members.includes(userId) || group.admins.includes(userId)
         );
+        console.log('Filtered Groups for User:', this.groups); // Log filtered groups
       },
       (error) => {
         console.error('Error fetching groups', error);

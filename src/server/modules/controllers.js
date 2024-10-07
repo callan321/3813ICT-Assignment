@@ -1,171 +1,300 @@
-const { users, groups, Channel} = require('./models');
+const { MongoClient } = require('mongodb');
+const url = 'mongodb://localhost:27017';
+const dbName = 'ChatApp';
+
+const { User, Group, Channel, Message } = require('./models'); // Import models
+
+// Function to handle database connection
+const connectToDatabase = async () => {
+  const client = new MongoClient(url);
+  await client.connect();
+  const db = client.db(dbName);
+  return { db, client };
+};
 
 // Get all users
-const getAllUsers = (req, res) => {
-  res.json(users);
+const getAllUsers = async (req, res) => {
+  try {
+    const { db, client } = await connectToDatabase();
+    const usersCollection = db.collection('users');
+    const users = await usersCollection.find({}).toArray();
+    res.json(users);
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching users', err });
+  }
 };
 
 // Create a new user
-const createUser = (req, res) => {
-  const newUser = req.body;
-  newUser.id = users.length + 1;
-  newUser.roles = newUser.roles && newUser.roles.length ? newUser.roles : ['user'];
-  newUser.groups = newUser.groups || [];
+const createUser = async (req, res) => {
+  const newUser = new User(
+    req.body.id,
+    req.body.username,
+    req.body.email,
+    req.body.password,
+    req.body.roles,
+    req.body.groups
+  );
 
-  users.push(newUser);
-  res.json({ message: 'User created', user: newUser });
+  try {
+    const { db, client } = await connectToDatabase();
+    const usersCollection = db.collection('users');
+    const result = await usersCollection.insertOne(newUser);
+    res.json({ message: 'User created', user: result.ops[0] });
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error creating user', err });
+  }
 };
 
 // Update a user
-const updateUser = (req, res) => {
+const updateUser = async (req, res) => {
   const userId = parseInt(req.params.id);
   const updatedUser = req.body;
-  const userIndex = users.findIndex(user => user.id === userId);
 
-  if (userIndex !== -1) {
-    users[userIndex] = { ...users[userIndex], ...updatedUser };
-    res.json({ message: 'User updated', user: users[userIndex] });
-  } else {
-    res.status(404).json({ message: 'User not found' });
+  try {
+    const { db, client } = await connectToDatabase();
+    const usersCollection = db.collection('users');
+    const result = await usersCollection.updateOne({ id: userId }, { $set: updatedUser });
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ message: 'User updated', user: updatedUser });
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating user', err });
   }
 };
 
 // Delete a user
-const deleteUser = (req, res) => {
+const deleteUser = async (req, res) => {
   const userId = parseInt(req.params.id);
-  const userIndex = users.findIndex(user => user.id === userId);
 
-  if (userIndex !== -1) {
-    users.splice(userIndex, 1);
+  try {
+    const { db, client } = await connectToDatabase();
+    const usersCollection = db.collection('users');
+    const result = await usersCollection.deleteOne({ id: userId });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
     res.json({ message: 'User deleted' });
-  } else {
-    res.status(404).json({ message: 'User not found' });
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting user', err });
   }
 };
 
 // Get all groups
-const getAllGroups = (req, res) => {
-  res.json(groups);
+const getAllGroups = async (req, res) => {
+  try {
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+    const groups = await groupsCollection.find({}).toArray();
+    res.json(groups);
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching groups', err });
+  }
 };
 
 // Create a new group
-const createGroup = (req, res) => {
-  const newGroup = req.body;
-  newGroup.groupId = groups.length + 1;
-  groups.push(newGroup);
-  res.json({ message: 'Group created', group: newGroup });
+const createGroup = async (req, res) => {
+  const newGroup = new Group(
+    req.body.groupId,
+    req.body.groupName,
+    req.body.createdBy,
+    req.body.admins,
+    req.body.members,
+    req.body.channels
+  );
+
+  try {
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+    const result = await groupsCollection.insertOne(newGroup);
+    res.json({ message: 'Group created', group: result.ops[0] });
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error creating group', err });
+  }
 };
 
 // Update a group
-const updateGroup = (req, res) => {
+const updateGroup = async (req, res) => {
   const groupId = parseInt(req.params.groupId);
   const updatedGroup = req.body;
-  const groupIndex = groups.findIndex(group => group.groupId === groupId);
 
-  if (groupIndex !== -1) {
-    groups[groupIndex] = { ...groups[groupIndex], ...updatedGroup };
-    res.json({ message: 'Group updated', group: groups[groupIndex] });
-  } else {
-    res.status(404).json({ message: 'Group not found' });
+  try {
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+    const result = await groupsCollection.updateOne({ groupId: groupId }, { $set: updatedGroup });
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Group not found' });
+    }
+
+    res.json({ message: 'Group updated', group: updatedGroup });
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating group', err });
   }
 };
 
 // Delete a group
-const deleteGroup = (req, res) => {
+const deleteGroup = async (req, res) => {
   const groupId = parseInt(req.params.groupId);
-  const groupIndex = groups.findIndex(group => group.groupId === groupId);
 
-  if (groupIndex !== -1) {
-    groups.splice(groupIndex, 1);
+  try {
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+    const result = await groupsCollection.deleteOne({ groupId: groupId });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'Group not found' });
+    }
+
     res.json({ message: 'Group deleted' });
-  } else {
-    res.status(404).json({ message: 'Group not found' });
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting group', err });
   }
 };
 
-const removeUserFromGroup = (req, res) => {
+// Remove a user from a group
+const removeUserFromGroup = async (req, res) => {
   const groupId = parseInt(req.params.groupId);
   const userId = parseInt(req.params.userId);
-  const group = groups.find(group => group.groupId === groupId);
 
-  if (group) {
-    group.members = group.members.filter(member => member !== userId);
-    res.json({ message: 'User removed from group members', group });
-  } else {
-    res.status(404).json({ message: 'Group not found' });
+  try {
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+
+    const result = await groupsCollection.updateOne(
+      { groupId: groupId },
+      { $pull: { members: userId } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Group not found' });
+    }
+
+    res.json({ message: 'User removed from group members' });
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error removing user from group', err });
   }
 };
 
 // Remove an admin from the group
-const removeAdminFromGroup = (req, res) => {
+const removeAdminFromGroup = async (req, res) => {
   const groupId = parseInt(req.params.groupId);
   const adminId = parseInt(req.params.adminId);
-  const group = groups.find(group => group.groupId === groupId);
 
-  if (group) {
-    group.admins = group.admins.filter(admin => admin !== adminId);
-    res.json({ message: 'Admin removed from group', group });
-  } else {
-    res.status(404).json({ message: 'Group not found' });
+  try {
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+
+    const result = await groupsCollection.updateOne(
+      { groupId: groupId },
+      { $pull: { admins: adminId } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Group not found' });
+    }
+
+    res.json({ message: 'Admin removed from group' });
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error removing admin from group', err });
   }
 };
 
-const removeChannelFromGroup = (req, res) => {
+// Remove a channel from a group
+const removeChannelFromGroup = async (req, res) => {
   const groupId = parseInt(req.params.groupId);
   const channelId = parseInt(req.params.channelId);
-  const group = groups.find(group => group.groupId === groupId);
 
-  if (group) {
-    group.channels = group.channels.filter(channel => channel.channelId !== channelId);
-    res.json({ message: 'Channel removed from group', group });
-  } else {
-    res.status(404).json({ message: 'Group not found' });
+  try {
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+
+    const result = await groupsCollection.updateOne(
+      { groupId: groupId },
+      { $pull: { channels: { channelId: channelId } } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Group not found' });
+    }
+
+    res.json({ message: 'Channel removed from group' });
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error removing channel from group', err });
   }
 };
 
-const upgradeToAdmin = (req, res) => {
+// Upgrade a user to admin
+const upgradeToAdmin = async (req, res) => {
   const groupId = parseInt(req.params.groupId);
   const userId = parseInt(req.params.userId);
-  const group = groups.find(group => group.groupId === groupId);
 
-  if (group) {
-    if (group.members.includes(userId)) {
-      group.members = group.members.filter(member => member !== userId);
-      if (!group.admins.includes(userId)) {
-        group.admins.push(userId);
-      }
-      res.json({ message: 'User upgraded to admin', group });
-    } else {
-      res.status(404).json({ message: 'User is not a member of this group' });
+  try {
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+
+    const result = await groupsCollection.updateOne(
+      { groupId: groupId },
+      { $pull: { members: userId }, $addToSet: { admins: userId } } // Remove from members, add to admins
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Group not found' });
     }
-  } else {
-    res.status(404).json({ message: 'Group not found' });
+
+    res.json({ message: 'User upgraded to admin' });
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error upgrading user to admin', err });
   }
 };
 
-const addChannelToGroup = (req, res) => {
+// Add a new channel to a group
+const addChannelToGroup = async (req, res) => {
   const groupId = parseInt(req.params.groupId);
   const { channelName, createdBy } = req.body;
-  const group = groups.find(group => group.groupId === groupId);
 
-  if (!Array.isArray(group.channels)) {
-    group.channels = [];
-  }
-  if (group) {
-    const newChannel = new Channel(
-      group.channels.length + 1,
-      channelName,
-      createdBy,
-      groupId,
-      []
+  const newChannel = {
+    channelId: new Date().getTime(), // Unique channelId based on timestamp
+    channelName,
+    createdBy,
+    messages: []
+  };
+
+  try {
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+
+    const result = await groupsCollection.updateOne(
+      { groupId: groupId },
+      { $push: { channels: newChannel } }
     );
-    group.channels.push(newChannel);
-    res.json({ message: 'Channel added successfully', group });
-  } else {
-    res.status(404).json({ message: 'Group not found' });
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Group not found' });
+    }
+
+    res.json({ message: 'Channel added successfully', channel: newChannel });
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error adding channel to group', err });
   }
 };
-
 
 module.exports = {
   getAllUsers,
@@ -180,5 +309,5 @@ module.exports = {
   removeAdminFromGroup,
   removeChannelFromGroup,
   upgradeToAdmin,
-  addChannelToGroup,
+  addChannelToGroup
 };
