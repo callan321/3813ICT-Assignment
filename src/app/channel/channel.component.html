@@ -1,0 +1,26 @@
+<div class="container">
+  <!-- Display Group and Channel Name at the Top -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>{{ groupName || 'No Group Selected' }}</h3>
+    <h4>{{ channelName || 'No Channel Selected' }}</h4>
+  </div>
+
+  <!-- Display Messages -->
+  <div class="mb-3">
+    <div *ngFor="let message of messages" class="border p-2 my-2">
+      <strong>Message {{ message.messageId }}:</strong> {{ message.content }}
+    </div>
+  </div>
+
+  <!-- Input field for sending new messages -->
+  <div class="input-group mb-3">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Type a message..."
+      [(ngModel)]="newMessage"
+      (keyup.enter)="sendMessage()"
+    />
+    <button class="btn btn-primary" (click)="sendMessage()">Send</button>
+  </div>
+</div>

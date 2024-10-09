@@ -296,6 +296,89 @@ const addChannelToGroup = async (req, res) => {
   }
 };
 
+// Get group and channel information
+const getGroupChannelInfo = async (req, res) => {
+  const groupId = parseInt(req.params.groupId);
+  const channelId = parseInt(req.params.channelId);
+
+  try {
+    // Establish MongoDB connection
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+
+    // Find the group by groupId
+    const group = await groupsCollection.findOne({ groupId: groupId });
+
+    // Close the MongoDB connection once we are done
+    await client.close();
+
+    // If no group is found, return 404
+    if (!group) {
+      return res.status(404).json({ message: 'Group not found' });
+    }
+
+    // Find the specific channel within the group
+    const channel = group.channels.find((c) => c.channelId === channelId);
+
+    // If no channel is found, return 404
+    if (!channel) {
+      return res.status(404).json({ message: 'Channel not found' });
+    }
+
+    // Return group and channel details
+    return res.json({
+      groupName: group.groupName,
+      channelName: channel.channelName,
+      messages: channel.messages, // Return messages from the channel
+    });
+  } catch (err) {
+    // Handle any error that occurs and send a 500 error response
+    console.error('Error fetching group or channel info:', err);
+    res.status(500).json({ message: 'Error fetching group or channel info', error: err.message });
+  }
+};
+
+// Post a new message to a channel and broadcast it
+const postMessageToChannel = async (req, res, io) => {
+  const groupId = parseInt(req.params.groupId);
+  const channelId = parseInt(req.params.channelId);
+  const { senderId, content } = req.body;
+
+  if (!content || !senderId) {
+    return res.status(400).json({ message: 'Sender ID and content are required.' });
+  }
+
+  const newMessage = {
+    messageId: new Date().getTime(),
+    senderId,
+    content
+  };
+
+  try {
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+
+    // Add the new message to the correct group and channel
+    const result = await groupsCollection.updateOne(
+      { groupId: groupId, 'channels.channelId': channelId },
+      { $push: { 'channels.$.messages': newMessage } }
+    );
+
+    if (result.matchedCount === 0) {
+      await client.close();
+      return res.status(404).json({ message: 'Group or channel not found' });
+    }
+
+    // Broadcast the message to all connected clients via Socket.IO
+    io.emit('messageBroadcast', newMessage);
+
+    await client.close();
+    res.status(201).json({ message: 'Message posted successfully', messageData: newMessage });
+  } catch (err) {
+    res.status(500).json({ message: 'Error posting message', err });
+  }
+};
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -309,5 +392,7 @@ module.exports = {
   removeAdminFromGroup,
   removeChannelFromGroup,
   upgradeToAdmin,
-  addChannelToGroup
+  addChannelToGroup,
+  postMessageToChannel,
+  getGroupChannelInfo,
 };

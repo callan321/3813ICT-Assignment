@@ -43,7 +43,8 @@
     </div>
     <ul class="nav nav-pills flex-column">
       <li class="nav-item" *ngFor="let channel of filteredChannels">
-        <a class="nav-link text-white py-2" style="cursor: pointer;">
+        <!-- Add dynamic routerLink for channels -->
+        <a [routerLink]="['/group', selectedGroup?.groupId, 'channel', channel.channelId]" class="nav-link text-white py-2" style="cursor: pointer;">
           <i class="bi bi-chat-dots-fill"></i> {{ channel.channelName }}
         </a>
       </li>

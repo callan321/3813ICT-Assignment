@@ -7,6 +7,7 @@ import { GroupsComponent} from "./groups/groups.component";
 import {UsersComponent} from "./users/users.component";
 import {CreateUserComponent} from "./create-user/create-user.component";
 import {SuperAdminGuard} from "../services/group.admin.guard";
+import {ChannelComponent} from "./channel/channel.component";
 
 
 export const routes: Routes = [
@@ -21,6 +22,7 @@ export const routes: Routes = [
       { path: 'home', component: HomeComponent },
       { path: 'users', component: UsersComponent, canActivate: [SuperAdminGuard] },
       { path: 'groups', component: GroupsComponent },
+      { path: 'group/:groupId/channel/:channelId', component: ChannelComponent }
     ]
   },
 ];
