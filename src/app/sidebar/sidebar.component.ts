@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-import { RouterOutlet, Router, RouterLink } from "@angular/router";
+import {RouterOutlet, Router, RouterLink, ActivatedRoute} from "@angular/router";
 import {NgForOf, NgIf} from "@angular/common";
 import * as bootstrap from 'bootstrap';  // Import Bootstrap Modal
 
@@ -39,13 +39,15 @@ export class SidebarComponent implements OnInit {
   selectedGroup: Group | null = null;
   filteredChannels: Channel[] = [];
 
-  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {}
+  constructor(private http: HttpClient, private authService: AuthService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.userId = this.authService.getUserId();
     if (this.userId) {
       this.getGroupsForUser(this.userId);
     }
+
+
   }
 
   canAccessUsers(): boolean {
