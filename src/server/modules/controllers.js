@@ -52,21 +52,31 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const userId = req.params.id;
 
+  // Ensure the ID is a valid ObjectId
+  if (!ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: 'Invalid user ID format' });
+  }
+
   try {
     const { db, client } = await connectToDatabase();
     const usersCollection = db.collection('users');
+
+    // Attempt to update the user with the provided ID
     const result = await usersCollection.updateOne(
       { _id: new ObjectId(userId) },
       { $set: req.body }
     );
 
+    // Handle the case where no document matched the provided ID
     if (result.matchedCount === 0) {
+      await client.close();
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json({ message: 'User updated', user: req.body });
+    res.status(200).json({ message: 'User updated', user: req.body });
     await client.close();
   } catch (err) {
+    console.error('Error updating user:', err);
     res.status(500).json({ message: 'Error updating user', err });
   }
 };
@@ -75,18 +85,28 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   const userId = req.params.id;
 
+  // Ensure the ID is a valid ObjectId
+  if (!ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: 'Invalid user ID format' });
+  }
+
   try {
     const { db, client } = await connectToDatabase();
     const usersCollection = db.collection('users');
+
+    // Attempt to delete the user with the provided ID
     const result = await usersCollection.deleteOne({ _id: new ObjectId(userId) });
 
+    // Handle the case where no document matched the provided ID
     if (result.deletedCount === 0) {
+      await client.close();
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json({ message: 'User deleted' });
+    res.status(200).json({ message: 'User deleted' });
     await client.close();
   } catch (err) {
+    console.error('Error deleting user:', err);
     res.status(500).json({ message: 'Error deleting user', err });
   }
 };
@@ -266,21 +286,35 @@ const upgradeToAdmin = async (req, res) => {
 
 // Add a new channel to a group
 const addChannelToGroup = async (req, res) => {
-  const { groupId } = req.params;  // The group ID from the request parameters
+  const { groupId } = req.params;
   const { channelName, createdBy } = req.body;
+
+  if (!ObjectId.isValid(groupId) || !ObjectId.isValid(createdBy)) {
+    return res.status(400).json({ message: 'Invalid ID format' });
+  }
 
   try {
     const { db, client } = await connectToDatabase();
-    const channelsCollection = db.collection('channels');
+    const groupsCollection = db.collection('groups');
 
-    const newChannel = new Channel(channelName, createdBy, groupId);
+    const newChannel = {
+      _id: new ObjectId(),
+      channelName,
+      createdBy: new ObjectId(createdBy),
+      messages: [],
+    };
 
-    // Insert the new channel into the 'channels' collection
-    const result = await channelsCollection.insertOne(newChannel);
+    const result = await groupsCollection.updateOne(
+      { _id: new ObjectId(groupId) },
+      { $push: { channels: newChannel } }
+    );
 
-    // Return the inserted channel (including its MongoDB-assigned _id as channelId)
-    res.status(201).json(result.ops[0]);
+    if (result.matchedCount === 0) {
+      await client.close();
+      return res.status(404).json({ message: 'Group not found' });
+    }
 
+    res.status(201).json({ message: 'Channel added to group', channel: newChannel });
     await client.close();
   } catch (err) {
     console.error('Error adding channel:', err);
@@ -395,7 +429,7 @@ const getGroupsAndChannelsForUser = async (req, res) => {
       ...group,
       channels: group.channels.map(channel => ({
         ...channel,
-        channelId: channel._id // Use MongoDB's _id as the channelId
+        channelId: channel._id
       }))
     }));
 

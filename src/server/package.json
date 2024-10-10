@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "node server.js",
     "seed": "node seed.js"
   },
@@ -17,6 +17,7 @@
     "socket.io": "^4.8.0"
   },
   "devDependencies": {
+    "mocha": "^10.7.3",
     "nodemon": "^3.1.4"
   }
 }
