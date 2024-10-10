@@ -21,7 +21,7 @@
   </thead>
   <tbody>
   <tr *ngFor="let group of groups">
-    <td>{{ group.groupId }}</td>
+    <td>{{ group._id }}</td>
     <td>{{ group.groupName }}</td>
 
     <!-- Channels column -->
@@ -30,7 +30,7 @@
         <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let channel of group.channels">
           {{ channel.channelName }}
           <!-- Channel Delete Option (only for group admins and super admins) -->
-          <button *ngIf="isSuperAdmin() || isGroupAdmin()" (click)="removeChannelFromGroup(group.groupId, channel.channelId)" class="btn btn-danger btn-sm">
+          <button *ngIf="isSuperAdmin() || isGroupAdmin()" (click)="removeChannelFromGroup(group._id, channel._id)" class="btn btn-danger btn-sm">
             Del
           </button>
         </li>
@@ -53,12 +53,12 @@
           {{ getUsernameById(member) }}
           <span class="d-flex">
             <!-- Upgrade to Admin Button (only for super admins) -->
-            <button *ngIf="isSuperAdmin() && !group.admins.includes(member)" (click)="upgradeToAdmin(group.groupId, member)" class="btn btn-sm btn-success mr-2">
+            <button *ngIf="isSuperAdmin() && !group.admins.includes(member)" (click)="upgradeToAdmin(group._id, member)" class="btn btn-sm btn-success mr-2">
               Promote to Admin
             </button>
             <!-- Remove Member Button (only for group admin or super admin) -->
             <button *ngIf="isSuperAdmin() || (isGroupAdmin() && group.admins.includes(authService.getUserId()))"
-                    (click)="removeUserFromGroup(group.groupId, member, 'member')"
+                    (click)="removeUserFromGroup(group._id, member, 'member')"
                     class="btn btn-sm btn-danger">
               Ban
             </button>
@@ -70,8 +70,8 @@
     <!-- Actions Column (Only show for Super Admin and Group Admin) -->
     <td *ngIf="isSuperAdmin() || (isGroupAdmin() && group.admins.includes(authService.getUserId()))">
       <div><input [(ngModel)]="group.newChannelName" class="form-control mb-2" placeholder="New channel name" /></div>
-      <div><button (click)="addChannelToGroup(group.groupId, group.newChannelName)" class="btn btn-primary btn-sm mb-2">Create</button></div>
-      <div><button (click)="deleteGroup(group.groupId)" class="btn btn-danger btn-sm">Delete Group</button></div>
+      <div><button (click)="addChannelToGroup(group._id, group.newChannelName)" class="btn btn-primary btn-sm mb-2">Create</button></div>
+      <div><button (click)="deleteGroup(group._id)" class="btn btn-danger btn-sm">Delete Group</button></div>
     </td>
   </tr>
   </tbody>

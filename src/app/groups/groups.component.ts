@@ -25,9 +25,10 @@ export class GroupsComponent implements OnInit {
   // Initialize newGroup object for creating groups
   newGroup: any = {
     groupName: '',
-    createdBy: 0,
+    createdBy: '',
     admins: [],
-    members: []
+    members: [],
+    channels: []
   };
 
   constructor(
@@ -66,7 +67,6 @@ export class GroupsComponent implements OnInit {
     );
   }
 
-
   createGroup(): void {
     if (!this.newGroup.groupName) {
       console.error('Group name is required!');
@@ -75,24 +75,32 @@ export class GroupsComponent implements OnInit {
 
     this.newGroup.admins = [this.newGroup.createdBy];
     this.newGroup.members = [this.newGroup.createdBy];
+    this.newGroup.channels = [];
 
     this.http.post(this.apiGroupsUrl, this.newGroup).subscribe(
       () => {
         this.loadGroups();
-        this.newGroup = { groupName: '', createdBy: this.authService.getUserId(), admins: [], members: [] }; // Reset form after creating
+        // Reset form after creating
+        this.newGroup = {
+          groupName: '',
+          createdBy: this.authService.getUserId(),
+          admins: [],
+          members: [],
+          channels: []
+        };
       },
       error => console.error('Error creating group', error)
     );
   }
 
-  deleteGroup(groupId: number): void {
+  deleteGroup(groupId: string): void {
     this.http.delete(`${this.apiGroupsUrl}/${groupId}`).subscribe(
       () => this.loadGroups(),
       error => console.error('Error deleting group', error)
     );
   }
 
-  addChannelToGroup(groupId: number, newChannelName: string): void {
+  addChannelToGroup(groupId: string, newChannelName: string): void {
     if (!newChannelName) {
       console.error('Channel name is required!');
       return;
@@ -109,14 +117,14 @@ export class GroupsComponent implements OnInit {
     );
   }
 
-  removeChannelFromGroup(groupId: number, channelId: number): void {
+  removeChannelFromGroup(groupId: string, channelId: string): void {
     this.http.put(`${this.apiGroupsUrl}/${groupId}/remove-channel/${channelId}`, {}).subscribe(
       () => this.loadGroups(),
       error => console.error('Error removing channel from group', error)
     );
   }
 
-  removeUserFromGroup(groupId: number, userId: number, role: string): void {
+  removeUserFromGroup(groupId: string, userId: string, role: string): void {
     const endpoint = role === 'admin' ? 'remove-admin' : 'remove-member';
     this.http.put(`${this.apiGroupsUrl}/${groupId}/${endpoint}/${userId}`, {}).subscribe(
       () => this.loadGroups(),
@@ -125,7 +133,7 @@ export class GroupsComponent implements OnInit {
   }
 
   // Upgrade a member to admin
-  upgradeToAdmin(groupId: number, userId: number): void {
+  upgradeToAdmin(groupId: string, userId: string): void {
     this.http.put(`${this.apiGroupsUrl}/${groupId}/upgrade-to-admin/${userId}`, {}).subscribe(
       () => this.loadGroups(),
       error => console.error('Error upgrading member to admin', error)
@@ -133,8 +141,8 @@ export class GroupsComponent implements OnInit {
   }
 
   // Fetch username based on user ID
-  getUsernameById(userId: number): string {
-    const user = this.users.find(u => u.id === userId);
+  getUsernameById(userId: string): string {
+    const user = this.users.find(u => u._id === userId);
     return user ? user.username : 'Unknown';
   }
 }

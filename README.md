@@ -178,3 +178,134 @@ AdminGuard and GroupGuard were not fully implemented but were designed to protec
 - [ ] Register interest in a group
 - [ ] Leave a group
 - [ ] Delete themselves
+
+# Part 2: Assignment Phase 2 Additions
+
+In this phase of the assignment, we have extended the functionality of our chat application based on the requirements specified for Assignment Phase 2. The key addition includes integrating MongoDB for data storage.
+
+## Data Structures
+
+### User
+
+- **_id**: string (MongoDB ObjectId)
+- **username**: string
+- **email**: string
+- **password**: string
+- **roles**: string[]
+- **groups**: string[]
+
+### Group
+
+- **_id**: string (MongoDB ObjectId)
+- **groupName**: string
+- **createdBy**: string
+- **admins**: string[]
+- **members**: string[]
+- **channels**: Channel[]
+
+### Channel
+
+- **_id**: string (MongoDB ObjectId)
+- **channelName**: string
+- **createdBy**: string
+- **groupId**: string
+- **messages**: Message[]
+
+### Message
+
+- **messageId**: number
+- **senderId**: string
+- **content**: string
+- **timestamp**: Date
+
+---
+
+## Updated API Endpoints
+
+### Groups and Channels
+
+- `GET /api/groups/:userId`
+  - Retrieve groups and channels for a specific user.
+
+- `GET /api/group/:groupId/channel/:channelId`
+  - Retrieve details of a specific channel within a group.
+
+- `POST /api/group/:groupId/channel/:channelId/message`
+  - Post a new message to a channel.
+
+---
+
+## Angular Architecture
+
+### New Components
+
+- **ChannelComponent**
+  - Manages chat within a channel, displays messages, and allows sending new messages.
+
+### Updated Components
+
+- **SidebarComponent**
+  - Displays the groups and channels the user is part of.
+  - Allows navigation to different channels.
+
+### Services
+
+- **AuthService**
+  - Added methods to get the current user's ID.
+  - Manages user authentication and authorization.
+
+---
+
+## MongoDB Integration
+
+- Switched from JSON file storage to MongoDB for persisting data.
+- Collections used:
+  - `users`
+  - `groups`
+- Controllers updated to interact with MongoDB using the MongoDB Node.js Driver.
+
+### Connection Helper Function
+
+Established a helper function to connect to the MongoDB database, ensuring database operations are streamlined.
+
+---
+
+## How the Components Interact
+
+- **Client Side:**
+  - `ChannelComponent` communicates with the server to fetch and display messages.
+  - `SidebarComponent` allows users to select groups and channels.
+  - `AuthService` handles authentication and stores user data.
+
+- **Server Side:**
+  - `controllers.js` handles API requests and interacts with MongoDB collections.
+  - `server.js` sets up the Express server and routes.
+
+---
+
+## Updated Requirements
+
+- [x] **MongoDB Integration**
+  - Data is now stored and managed using MongoDB.
+
+- [x] **Real-Time Chat Functionality**
+
+- [ ] **Image Support**
+  - *To be implemented.*
+
+- [ ] **Video Support**
+  - *To be implemented.*
+
+## Testing 
+### Server 
+npm run seed
+npm start 
+npm test
+
+### Client 
+ng test
+
+## Conclusion
+
+With the integration of MongoDB, the chat application now has a robust and scalable data storage solution. This sets the foundation for implementing real-time chat functionality and other advanced features in future iterations.
+

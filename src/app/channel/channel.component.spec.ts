@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChannelComponent } from './channel.component';
+import {ActivatedRoute} from "@angular/router";
 
 describe('ChannelComponent', () => {
   let component: ChannelComponent;
@@ -8,7 +9,7 @@ describe('ChannelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChannelComponent]
+      imports: [ChannelComponent],
     })
     .compileComponents();
 
