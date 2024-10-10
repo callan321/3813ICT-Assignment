@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 // MongoDB connection
 const url = 'mongodb://localhost:27017';
@@ -31,6 +31,7 @@ const groups = [
     members: [],
     channels: [
       {
+        _id: new ObjectId(),  // Add ObjectId for the channel
         channelName: 'General Chat',
         createdBy: '',
         messages: []
@@ -44,6 +45,7 @@ const groups = [
     members: [],
     channels: [
       {
+        _id: new ObjectId(),  // Add ObjectId for the channel
         channelName: 'Admin Discussions',
         createdBy: '',
         messages: []

@@ -266,34 +266,28 @@ const upgradeToAdmin = async (req, res) => {
 
 // Add a new channel to a group
 const addChannelToGroup = async (req, res) => {
-  const groupId = req.params.groupId;
+  const { groupId } = req.params;  // The group ID from the request parameters
   const { channelName, createdBy } = req.body;
-
-  const newChannel = {
-    channelId: new ObjectId(),  // Use MongoDB ObjectId for channelId
-    channelName,
-    createdBy,
-    messages: []
-  };
 
   try {
     const { db, client } = await connectToDatabase();
-    const groupsCollection = db.collection('groups');
-    const result = await groupsCollection.updateOne(
-      { _id: new ObjectId(groupId) },
-      { $push: { channels: newChannel } }
-    );
+    const channelsCollection = db.collection('channels');
 
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: 'Group not found' });
-    }
+    const newChannel = new Channel(channelName, createdBy, groupId);
 
-    res.json({ message: 'Channel added successfully', channel: newChannel });
+    // Insert the new channel into the 'channels' collection
+    const result = await channelsCollection.insertOne(newChannel);
+
+    // Return the inserted channel (including its MongoDB-assigned _id as channelId)
+    res.status(201).json(result.ops[0]);
+
     await client.close();
   } catch (err) {
-    res.status(500).json({ message: 'Error adding channel to group', err });
+    console.error('Error adding channel:', err);
+    res.status(500).json({ message: 'Error adding channel', error: err.message });
   }
 };
+
 
 // Get group and channel information
 const getGroupChannelInfo = async (req, res) => {
@@ -372,8 +366,17 @@ const getGroupsAndChannelsForUser = async (req, res) => {
       ]
     }).toArray();
 
-    console.log('Fetched groups:', groups);  // Debug the fetched groups
-    res.json(groups);
+    // For each group, map over its channels and set channelId from MongoDB's _id
+    const groupsWithChannelIds = groups.map(group => ({
+      ...group,
+      channels: group.channels.map(channel => ({
+        ...channel,
+        channelId: channel._id // Use MongoDB's _id as the channelId
+      }))
+    }));
+
+    // Return the modified groups with channelId
+    res.json(groupsWithChannelIds);
     await client.close();
   } catch (err) {
     console.error('Error fetching groups and channels:', err);
