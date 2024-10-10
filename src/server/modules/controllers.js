@@ -333,6 +333,7 @@ const getGroupChannelInfo = async (req, res) => {
 
 
 // Post a new message to a channel and broadcast it
+// Post a new message to a channel and broadcast it
 const postMessageToChannel = async (req, res, io) => {
   const groupId = req.params.groupId;
   const channelId = req.params.channelId;
@@ -362,14 +363,16 @@ const postMessageToChannel = async (req, res, io) => {
       return res.status(404).json({ message: 'Group or channel not found' });
     }
 
-    // Broadcast the message to all connected clients
-    io.emit('messageBroadcast', newMessage);
+    // Emit the message to the specific channel room
+    io.to(channelId).emit('messageBroadcast', newMessage);
+
     res.status(201).json({ message: 'Message posted successfully', messageData: newMessage });
     await client.close();
   } catch (err) {
     res.status(500).json({ message: 'Error posting message', err });
   }
 };
+
 
 
 const getGroupsAndChannelsForUser = async (req, res) => {

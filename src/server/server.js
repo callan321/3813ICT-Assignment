@@ -84,16 +84,16 @@ const io = new Server(server, {
   }
 });
 
+// In your server.js or equivalent file
+
 // Handle socket connections
 io.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
 
-  // Listen for 'chatMessage' from client
-  socket.on('chatMessage', (messageData) => {
-    console.log('Message received:', messageData);
-
-    // Broadcast the message to all clients
-    io.emit('messageBroadcast', messageData);
+  // Listen for 'joinChannel' from the client
+  socket.on('joinChannel', (channelId) => {
+    socket.join(channelId);
+    console.log(`Client ${socket.id} joined channel ${channelId}`);
   });
 
   // Handle disconnection
@@ -101,6 +101,7 @@ io.on('connection', (socket) => {
     console.log('Client disconnected:', socket.id);
   });
 });
+
 
 // Start the server
 server.listen(port, () => {

@@ -49,6 +49,10 @@ export class ChannelComponent implements OnInit {
     // Check if the parameters are valid and load channel data
     if (this.groupId && this.channelId) {
       this.loadChannelData(this.groupId, this.channelId);
+
+      // Join the channel room
+      this.socket.emit('joinChannel', this.channelId);
+
       this.listenForMessages();
     }
   }
