@@ -3,7 +3,6 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 
-
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -21,7 +20,10 @@ const {
   removeAdminFromGroup,
   removeChannelFromGroup,
   upgradeToAdmin,
-  addChannelToGroup, getGroupChannelInfo, postMessageToChannel
+  addChannelToGroup,
+  getGroupChannelInfo,
+  postMessageToChannel,
+  getGroupsAndChannelsForUser
 } = require('./modules/controllers');
 const { loginUser } = require('./modules/auth');
 
@@ -32,7 +34,6 @@ app.use(cors({
   origin: 'http://localhost:4200',
   credentials: true
 }));
-
 
 // Status endpoint
 app.get('/', (req, res) => {
@@ -57,12 +58,15 @@ app.put('/api/groups/:groupId/remove-channel/:channelId', removeChannelFromGroup
 app.put('/api/groups/:groupId/upgrade-to-admin/:userId', upgradeToAdmin);
 app.post('/api/groups/:groupId/add-channel', addChannelToGroup);
 
+// Group and channel info endpoints
 app.get('/api/group/:groupId/channel/:channelId', getGroupChannelInfo);
 app.post('/api/group/:groupId/channel/:channelId/message', (req, res) => postMessageToChannel(req, res, io));
 
+// Route to get groups and channels for the logged-in user
+app.get('/api/groups/:userId', getGroupsAndChannelsForUser);
+
 // Login Endpoint
 app.post('/api/login', loginUser);
-
 
 // Fallback for undefined routes
 app.use((req, res) => {
@@ -97,8 +101,6 @@ io.on('connection', (socket) => {
     console.log('Client disconnected:', socket.id);
   });
 });
-
-
 
 // Start the server
 server.listen(port, () => {

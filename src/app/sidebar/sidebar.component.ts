@@ -1,22 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-import {RouterOutlet, Router, RouterLink, ActivatedRoute} from "@angular/router";
-import {NgForOf, NgIf} from "@angular/common";
-import * as bootstrap from 'bootstrap';  // Import Bootstrap Modal
+import { RouterOutlet, Router, RouterLink } from "@angular/router";
+import { NgForOf, NgIf } from "@angular/common";
 
 interface Channel {
-  channelId: number;
+  channelId: string;
   channelName: string;
-  groupId: number;
+  groupId: string;
   messages: any[];
 }
 
 interface Group {
-  groupId: number;
+  _id: string; // MongoDB ObjectId as string
   groupName: string;
-  admins: number[];
-  members: number[];
+  admins: string[];
+  members: string[];
   channels: Channel[];
 }
 
@@ -33,36 +32,37 @@ interface Group {
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-  private apiGroupsUrl = 'http://localhost:3000/api/groups';
-  userId: number | null = null;
+  private apiGroupsUrl = 'http://localhost:3000/api/groups'; // Updated route
+  userId: string | null = null;
   groups: Group[] = [];
   selectedGroup: Group | null = null;
   filteredChannels: Channel[] = [];
 
-  constructor(private http: HttpClient, private authService: AuthService, private router: Router, private route: ActivatedRoute) {}
+  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
-    this.userId = this.authService.getUserId();
-    if (this.userId) {
-      this.getGroupsForUser(this.userId);
+    const userId = this.authService.getUserId();
+    if (userId) {
+      this.userId = userId;
+      this.getGroupsForUser(userId);
     }
-
-
   }
 
   canAccessUsers(): boolean {
     return this.authService.isSuperAdmin();
   }
 
+  // Only show the "Groups" section for Admin users
+  canAccessGroups(): boolean {
+    return this.authService.isSuperAdmin() || this.authService.isGroupAdmin();
+  }
 
-  getGroupsForUser(userId: number): void {
-    this.http.get<Group[]>(this.apiGroupsUrl).subscribe(
+  // Fetch groups and relevant data for the user
+  getGroupsForUser(userId: string): void {
+    this.http.get<Group[]>(`${this.apiGroupsUrl}/${userId}`).subscribe(
       (groupsData) => {
-        console.log('Fetched Groups:', groupsData); // Add this for debugging
-        this.groups = groupsData.filter(group =>
-          group.members.includes(userId) || group.admins.includes(userId)
-        );
-        console.log('Filtered Groups for User:', this.groups); // Log filtered groups
+        console.log('Fetched Groups:', groupsData);  // Log fetched data
+        this.groups = groupsData;  // Assign the groups to be displayed
       },
       (error) => {
         console.error('Error fetching groups', error);
@@ -70,18 +70,15 @@ export class SidebarComponent implements OnInit {
     );
   }
 
+
+  // When a group is selected, filter and display its channels
   selectGroup(group: Group): void {
     this.selectedGroup = group;
-    this.filteredChannels = group.channels;
-    console.log('Selected Group:', this.selectedGroup.groupId, 'Channels:', this.filteredChannels);
+    this.filteredChannels = group.channels;  // Filter the channels of the selected group
+    console.log('Selected Group:', this.selectedGroup._id, 'Channels:', this.filteredChannels);
   }
 
-  openLogoutModal(): void {
-    const modalElement = document.getElementById('logoutConfirmationModal') as HTMLElement;
-    const modal = new bootstrap.Modal(modalElement);
-    modal.show();
-  }
-
+  // Logout the user
   confirmLogout(): void {
     this.authService.clearAuthData();
     this.router.navigate(['/login']); // Redirect to login page after logout

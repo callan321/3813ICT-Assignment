@@ -6,8 +6,8 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { GroupsComponent} from "./groups/groups.component";
 import {UsersComponent} from "./users/users.component";
 import {CreateUserComponent} from "./create-user/create-user.component";
-import {SuperAdminGuard} from "../services/group.admin.guard";
 import {ChannelComponent} from "./channel/channel.component";
+import {SuperAdminGuard} from "../services/super.admin.guard";
 
 
 export const routes: Routes = [

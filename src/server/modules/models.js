@@ -1,6 +1,5 @@
 class User {
-  constructor(id, username, email, password, roles = ['user'], groups = []) {
-    this.id = id;
+  constructor(username, email, password, roles = ['user'], groups = []) {
     this.username = username;
     this.email = email;
     this.password = password;
@@ -10,8 +9,7 @@ class User {
 }
 
 class Group {
-  constructor(groupId, groupName, createdBy, admins = [], members = [], channels = []) {
-    this.groupId = groupId;
+  constructor(groupName, createdBy, admins = [], members = [], channels = [], channels1) {
     this.groupName = groupName;
     this.createdBy = createdBy;
     this.admins = admins;
@@ -37,8 +35,7 @@ class Group {
 }
 
 class Channel {
-  constructor(channelId, channelName, createdBy, groupId, messages = []) {
-    this.channelId = channelId;
+  constructor(channelName, createdBy, groupId, messages = []) {
     this.channelName = channelName;
     this.groupId = groupId;
     this.createdBy = createdBy;
@@ -51,8 +48,7 @@ class Channel {
 }
 
 class Message {
-  constructor(messageId, senderId, content) {
-    this.messageId = messageId;
+  constructor(senderId, content) {
     this.senderId = senderId;
     this.content = content;
   }

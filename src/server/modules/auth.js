@@ -36,7 +36,7 @@ const loginUser = async (req, res) => {
       res.json({
         message: 'Login successful',
         user: {
-          id: user.id, // MongoDB uses _id by default
+          id: user._id.toString(),
           username: user.username,
           roles: user.roles
         }

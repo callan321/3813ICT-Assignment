@@ -7,22 +7,21 @@ export class AuthService {
 
   private userIdKey = 'userId';
   private usernameKey = 'username';
-  private rolesKey = 'roles'; // Add a key to store roles
+  private rolesKey = 'roles';
 
-  // Store username, userId, and roles
-  saveUserSessionData(username: string, userId: number, roles: string[]): void {
+  // Store username, userId (as string), and roles
+  saveUserSessionData(username: string, userId: string, roles: string[]): void {
     localStorage.setItem(this.usernameKey, username);
-    localStorage.setItem(this.userIdKey, userId.toString());
-    localStorage.setItem(this.rolesKey, JSON.stringify(roles)); // Store roles as a stringified array
+    localStorage.setItem(this.userIdKey, userId);
+    localStorage.setItem(this.rolesKey, JSON.stringify(roles));
   }
 
   getUsername(): string | null {
     return localStorage.getItem(this.usernameKey);
   }
 
-  getUserId(): number | null {
-    const userId = localStorage.getItem(this.userIdKey);
-    return userId ? parseInt(userId, 10) : null;
+  getUserId(): string | null {
+    return localStorage.getItem(this.userIdKey);
   }
 
   getUserRoles(): string[] {

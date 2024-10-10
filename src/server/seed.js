@@ -4,73 +4,118 @@ const { MongoClient } = require('mongodb');
 const url = 'mongodb://localhost:27017';
 const dbName = 'ChatApp';
 
-// Seed data
+// Users: super and test user
 const users = [
-  { id: 1, username: 'super', email: 'super@example.com', password: '123', roles: ['super_admin'], groups: [1, 2] },
-  { id: 2, username: 'user', email: 'regular@example.com', password: 'password', roles: ['user'], groups: [1] },
-  { id: 3, username: 'developer', email: 'dev@example.com', password: 'devpass', roles: ['user'], groups: [2, 4] },
-  { id: 4, username: 'designer', email: 'designer@example.com', password: 'designpass', roles: ['user'], groups: [3] },
-  { id: 5, username: 'test', email: 'test@example.com', password: 'testssds', roles: ['user'], groups: [3] },
+  {
+    username: 'super',
+    email: 'superadmin@example.com',
+    password: '123',
+    roles: ['super_admin'],
+    groups: []
+  },
+  {
+    username: 'user',
+    email: 'testuser@example.com',
+    password: '123',
+    roles: ['user'],
+    groups: []
+  }
 ];
 
+// Groups
 const groups = [
   {
-    groupId: 1, groupName: 'General Group', createdBy: 1, admins: [1], members: [1, 2],
+    groupName: 'General Group',
+    createdBy: '',
+    admins: [],
+    members: [],
     channels: [
-      { channelId: 1, channelName: 'General Chat', createdBy: 1, messages: [
-          { messageId: 1, senderId: 1, content: 'Hello, this is a message from the super admin!' },
-          { messageId: 2, senderId: 2, content: 'Hi, this is a message from a regular user!' }
-        ]},
-      { channelId: 3, channelName: 'Empty Chat', createdBy: 1, messages: [] }
+      {
+        channelName: 'General Chat',
+        createdBy: '',
+        messages: []
+      }
     ]
   },
   {
-    groupId: 2, groupName: 'Development Group', createdBy: 2, admins: [2], members: [1, 3],
+    groupName: 'Admin Group',
+    createdBy: '',
+    admins: [],
+    members: [],
     channels: [
-      { channelId: 2, channelName: 'Dev Discussions', createdBy: 2, messages: [
-          { messageId: 3, senderId: 2, content: 'Let’s start discussing the new project here.' }
-        ]}
-    ]
-  },
-  {
-    groupId: 3, groupName: 'Design Team', createdBy: 4, admins: [4], members: [4],
-    channels: [
-      { channelId: 3, channelName: 'Design Chat', createdBy: 4, messages: [
-          { messageId: 4, senderId: 4, content: 'Let’s brainstorm ideas for the new project.' },
-          { messageId: 5, senderId: 3, content: 'I have some mockups ready for review.' }
-        ]}
-    ]
-  },
-  {
-    groupId: 4, groupName: 'Marketing Team', createdBy: 3, admins: [3], members: [3],
-    channels: [
-      { channelId: 4, channelName: 'Marketing Chat', createdBy: 3, messages: [
-          { messageId: 6, senderId: 3, content: 'Welcome to the Marketing Team!' }
-        ]}
+      {
+        channelName: 'Admin Discussions',
+        createdBy: '',
+        messages: []
+      }
     ]
   }
 ];
 
-// Function to refresh the database
-const refreshDatabase = async () => {
+const seedDatabase = async () => {
   const client = new MongoClient(url);
 
   try {
-    // Connect to MongoDB
     await client.connect();
-    console.log('Connected to MongoDB for seeding...');
+    console.log('Connected to MongoDB...');
 
     const db = client.db(dbName);
 
-    // Drop the collections if they exist
-    await db.collection('users').drop().catch(() => console.log('Users collection does not exist.'));
-    await db.collection('groups').drop().catch(() => console.log('Groups collection does not exist.'));
+    // Drop existing collections to refresh the database
+    const collections = await db.listCollections().toArray();
+    for (const collection of collections) {
+      await db.collection(collection.name).drop();
+      console.log(`Dropped collection: ${collection.name}`);
+    }
 
-    // Insert seed data
-    await db.collection('users').insertMany(users);
-    await db.collection('groups').insertMany(groups);
+    // Insert users
+    const usersCollection = db.collection('users');
+    const insertedUsers = await usersCollection.insertMany(users);
+    console.log('Inserted users:', insertedUsers.insertedIds);
 
-    console.log('Database has been refreshed and seeded successfully!');
+    // Retrieve user IDs
+    const superId = insertedUsers.insertedIds[0];
+    const testId = insertedUsers.insertedIds[1];
+
+    // Group 1: General Group (both super and test user)
+    groups[0].createdBy = superId;
+    groups[0].admins = [superId];
+    groups[0].members = [superId, testId];
+    groups[0].channels[0].createdBy = superId;
+    groups[0].channels[0].messages.push(
+      { senderId: superId, content: 'Welcome to the General Group!' },
+      { senderId: testId, content: 'Thanks! Glad to be here.' }
+    );
+
+    // Group 2: Admin Group (only super)
+    groups[1].createdBy = superId;
+    groups[1].admins = [superId];
+    groups[1].members = [superId];
+    groups[1].channels[0].createdBy = superId;
+    groups[1].channels[0].messages.push(
+      { senderId: superId, content: 'Admin-only discussions here.' }
+    );
+
+    // Insert groups
+    const groupsCollection = db.collection('groups');
+    const insertedGroups = await groupsCollection.insertMany(groups);
+    console.log('Inserted groups:', insertedGroups.insertedIds);
+
+    // Update users to reference their respective groups
+    const generalGroupId = insertedGroups.insertedIds[0];
+    const adminGroupId = insertedGroups.insertedIds[1];
+
+    await usersCollection.updateOne(
+      { _id: superId },
+      { $set: { groups: [generalGroupId, adminGroupId] } }
+    );
+
+    await usersCollection.updateOne(
+      { _id: testId },
+      { $set: { groups: [generalGroupId] } }
+    );
+
+    console.log('Users updated with group IDs.');
 
   } catch (err) {
     console.error('Error seeding the database:', err);
@@ -79,5 +124,5 @@ const refreshDatabase = async () => {
   }
 };
 
-// Run the refreshDatabase function
-refreshDatabase();
+// Run the seed function
+seedDatabase();

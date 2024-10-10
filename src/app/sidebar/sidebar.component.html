@@ -1,36 +1,42 @@
-<div class="d-flex ">
-  <!-- Left Sidebar to Display Group IDs -->
-  <nav class="d-flex flex-column bg-dark text-white vh-100 sticky-top " style="width: 80px;">
-    <!-- Static Home and Admin Links -->
-    <ul class="nav nav-pills flex-column text-center mt-2">
+<div class="d-flex">
+  <!-- Left Sidebar to Display Group Names -->
+  <nav class="d-flex flex-column bg-dark text-white vh-100 sticky-top" style="width: 80px;">
+    <ul class="nav nav-pills flex-column text-center mt-2 flex-grow-1">
+      <!-- Home Link -->
       <li class="nav-item mb-2">
         <a [routerLink]="['/home']" class="nav-link text-white py-3">
           <i class="bi bi-house-door-fill fs-4"></i>
         </a>
       </li>
+
+      <!-- Users Link (Visible only to Super Admins) -->
       <li class="nav-item mb-2" *ngIf="canAccessUsers()">
         <a [routerLink]="['/users']" class="nav-link text-white py-3">
           <i class="bi bi-person-fill fs-4"></i>
         </a>
       </li>
 
-      <li class="nav-item mb-2">
+      <!-- Groups Link (Visible only to Admins) -->
+      <li class="nav-item mb-2" *ngIf="canAccessGroups()">
         <a [routerLink]="['/groups']" class="nav-link text-white py-3">
           <i class="bi bi-people-fill fs-4"></i>
         </a>
       </li>
-      <li class="nav-item mb-2">
-        <a class="nav-link text-white py-3" (click)="openLogoutModal()">
-          <i class="bi bi-box-arrow-right fs-4"></i>
+
+      <!-- Groups (Only show group names) -->
+      <li class="nav-item mb-2" *ngFor="let group of groups">
+        <!-- Display first 3 letters of the group name -->
+        <a class="nav-link text-white py-3" (click)="selectGroup(group)" style="cursor: pointer;">
+          {{ group.groupName.substring(0, 3) }}
         </a>
       </li>
     </ul>
 
-    <!-- Dynamic Group Links (Display Group IDs) -->
-    <ul class="nav nav-pills flex-column text-center mt-2">
-      <li class="nav-item mb-2" *ngFor="let group of groups">
-        <a class="nav-link text-white py-3" (click)="selectGroup(group)" style="cursor: pointer;">
-          G{{ group.groupId }}
+    <!-- Logout Button -->
+    <ul class="nav nav-pills flex-column text-center mt-2 mb-3">
+      <li class="nav-item mb-2">
+        <a class="nav-link text-white py-3" (click)="confirmLogout()">
+          <i class="bi bi-box-arrow-right fs-4"></i>
         </a>
       </li>
     </ul>
@@ -45,7 +51,7 @@
       <li class="nav-item" *ngFor="let channel of filteredChannels">
         <!-- Add dynamic routerLink for channels -->
         <a
-          [href]="'/group/' + selectedGroup?.groupId + '/channel/' + channel.channelId"
+          [routerLink]="['/group', selectedGroup?._id, 'channel', channel.channelId]"
           class="nav-link text-white py-2"
           style="cursor: pointer;"
         >
@@ -60,23 +66,3 @@
     <router-outlet></router-outlet>
   </div>
 </div>
-
-<!-- Logout Confirmation Modal -->
-<div class="modal fade" id="logoutConfirmationModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        Are you sure you want to log out?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" (click)="confirmLogout()" data-bs-dismiss="modal">Logout</button>
-      </div>
-    </div>
-  </div>
-</div>
-
