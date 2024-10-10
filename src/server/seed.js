@@ -34,7 +34,7 @@ const groups = [
         _id: new ObjectId(),  // Add ObjectId for the channel
         channelName: 'General Chat',
         createdBy: '',
-        messages: []
+        messages: []  // Empty messages array to begin with
       }
     ]
   },
@@ -48,7 +48,7 @@ const groups = [
         _id: new ObjectId(),  // Add ObjectId for the channel
         channelName: 'Admin Discussions',
         createdBy: '',
-        messages: []
+        messages: []  // Empty messages array to begin with
       }
     ]
   }
@@ -85,8 +85,8 @@ const seedDatabase = async () => {
     groups[0].members = [superId, testId];
     groups[0].channels[0].createdBy = superId;
     groups[0].channels[0].messages.push(
-      { senderId: superId, content: 'Welcome to the General Group!' },
-      { senderId: testId, content: 'Thanks! Glad to be here.' }
+      { senderId: superId, content: 'Welcome to the General Group!' },  // Adding a message from super
+      { senderId: testId, content: 'Thanks! Glad to be here.' }  // Adding a message from test user
     );
 
     // Group 2: Admin Group (only super)
@@ -95,7 +95,7 @@ const seedDatabase = async () => {
     groups[1].members = [superId];
     groups[1].channels[0].createdBy = superId;
     groups[1].channels[0].messages.push(
-      { senderId: superId, content: 'Admin-only discussions here.' }
+      { senderId: superId, content: 'Admin-only discussions here.' }  // Adding an admin-only message
     );
 
     // Insert groups
