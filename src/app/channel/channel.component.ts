@@ -16,8 +16,8 @@ import { io, Socket } from 'socket.io-client'; // Import socket.io-client
   styleUrls: ['./channel.component.css']
 })
 export class ChannelComponent implements OnInit {
-  groupId: number | null = null;
-  channelId: number | null = null;
+  groupId: string | null = null;
+  channelId: string | null = null;
   groupName: string = '';
   channelName: string = '';
   messages: any[] = [];
@@ -34,24 +34,22 @@ export class ChannelComponent implements OnInit {
     this.socket = io('http://localhost:3000'); // Connect to your backend's Socket.IO server
   }
 
+  // Update how you fetch the parameters in ngOnInit()
   ngOnInit(): void {
-    // Fetch the route parameters
-    this.groupId = Number(this.route.snapshot.paramMap.get('groupId'));
-    this.channelId = Number(this.route.snapshot.paramMap.get('channelId'));
+    this.groupId = this.route.snapshot.paramMap.get('groupId');
+    this.channelId = this.route.snapshot.paramMap.get('channelId');
 
     console.log(`Group ID: ${this.groupId}, Channel ID: ${this.channelId}`);
 
     // Check if the parameters are valid and load channel data
     if (this.groupId && this.channelId) {
       this.loadChannelData(this.groupId, this.channelId);
-
-      // Listen for real-time messages
       this.listenForMessages();
     }
   }
 
   // Load chat history for the selected group and channel
-  loadChannelData(groupId: number, channelId: number): void {
+  loadChannelData(groupId: string, channelId: string): void {
     const apiUrl = `${this.apiBaseUrl}/group/${groupId}/channel/${channelId}`; // API endpoint
 
     this.http.get(apiUrl).subscribe(
@@ -66,6 +64,7 @@ export class ChannelComponent implements OnInit {
       }
     );
   }
+
 
   // Send a new message and post it to the server
   sendMessage(): void {

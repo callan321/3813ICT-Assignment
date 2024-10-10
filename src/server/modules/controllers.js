@@ -295,22 +295,38 @@ const getGroupChannelInfo = async (req, res) => {
   const channelId = req.params.channelId;
 
   try {
+    // Establish MongoDB connection
     const { db, client } = await connectToDatabase();
     const groupsCollection = db.collection('groups');
+
+    // Find the group by groupId
     const group = await groupsCollection.findOne({ _id: new ObjectId(groupId) });
 
     if (!group) {
+      await client.close();
       return res.status(404).json({ message: 'Group not found' });
     }
 
-    const channel = group.channels.find((c) => c.channelId.toString() === channelId);
+    // Find the specific channel within the group
+    const channel = group.channels.find((c) => c._id.toString() === channelId);  // Potential source of error
+
     if (!channel) {
+      await client.close();
       return res.status(404).json({ message: 'Channel not found' });
     }
 
-    res.json({ groupName: group.groupName, channelName: channel.channelName, messages: channel.messages });
+    // Close the MongoDB connection once we are done
     await client.close();
+
+    // Return group and channel details
+    return res.json({
+      groupName: group.groupName,
+      channelName: channel.channelName,
+      messages: channel.messages
+    });
   } catch (err) {
+    // Handle any error that occurs and send a 500 error response
+    console.error('Error fetching group or channel info:', err);
     res.status(500).json({ message: 'Error fetching group or channel info', error: err.message });
   }
 };

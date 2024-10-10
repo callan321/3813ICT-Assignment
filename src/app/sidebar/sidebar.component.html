@@ -49,9 +49,9 @@
     </div>
     <ul class="nav nav-pills flex-column">
       <li class="nav-item" *ngFor="let channel of filteredChannels">
-        <!-- Add dynamic routerLink for channels -->
+        <!-- Use an `a` tag with a regular `href` attribute -->
         <a
-          [routerLink]="['/group', selectedGroup?._id, 'channel', channel.channelId]"
+          href="/group/{{selectedGroup?._id}}/channel/{{channel.channelId}}"
           class="nav-link text-white py-2"
           style="cursor: pointer;"
         >
@@ -59,6 +59,7 @@
         </a>
       </li>
     </ul>
+
   </nav>
 
   <!-- Main Content Area -->

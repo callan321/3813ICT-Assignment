@@ -34,8 +34,11 @@ class Group {
   }
 }
 
+const { ObjectId } = require('mongodb');
+
 class Channel {
   constructor(channelName, createdBy, groupId, messages = []) {
+    this._id = new ObjectId(); // This will assign a unique ObjectId to each channel.
     this.channelName = channelName;
     this.groupId = groupId;
     this.createdBy = createdBy;
@@ -46,6 +49,7 @@ class Channel {
     this.messages.push(message);
   }
 }
+
 
 class Message {
   constructor(senderId, content) {
