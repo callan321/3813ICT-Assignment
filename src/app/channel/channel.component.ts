@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http'; // For making HTTP requests
 import { FormsModule } from '@angular/forms';
 import { NgForOf } from '@angular/common';
 import { io, Socket } from 'socket.io-client'; // Import socket.io-client
+import { AuthService } from '../../services/auth.service'; // Assuming you have an AuthService to get the user info
 
 @Component({
   selector: 'app-channel',
@@ -22,20 +23,24 @@ export class ChannelComponent implements OnInit {
   channelName: string = '';
   messages: any[] = [];
   newMessage: string = '';
+  senderId: string | null = ''; // To store the current user's ID
 
   // Define the Socket.IO client instance
   private socket: Socket;
 
-  // Base API URL (replace with your actual backend URL if different)
+  // Base API URL
   private apiBaseUrl = 'http://localhost:3000/api';
 
-  constructor(private route: ActivatedRoute, private http: HttpClient) {
+  constructor(private route: ActivatedRoute, private http: HttpClient, private authService: AuthService) {
     // Initialize Socket.IO connection
     this.socket = io('http://localhost:3000'); // Connect to your backend's Socket.IO server
   }
 
-  // Update how you fetch the parameters in ngOnInit()
   ngOnInit(): void {
+    // Fetch the user ID (replace with your actual logic to get the logged-in user ID)
+    this.senderId = this.authService.getUserId(); // Assuming `getUserId()` fetches the logged-in user’s ID
+
+    // Fetch the group and channel IDs from the route parameters
     this.groupId = this.route.snapshot.paramMap.get('groupId');
     this.channelId = this.route.snapshot.paramMap.get('channelId');
 
@@ -65,12 +70,11 @@ export class ChannelComponent implements OnInit {
     );
   }
 
-
   // Send a new message and post it to the server
   sendMessage(): void {
     if (this.newMessage.trim() && this.groupId && this.channelId) {
       const messageData = {
-        senderId: 123, // Replace with actual user ID if needed
+        senderId: this.senderId, // Use the current user's ID
         content: this.newMessage
       };
 

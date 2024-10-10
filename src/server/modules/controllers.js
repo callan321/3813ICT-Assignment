@@ -331,6 +331,7 @@ const getGroupChannelInfo = async (req, res) => {
   }
 };
 
+
 // Post a new message to a channel and broadcast it
 const postMessageToChannel = async (req, res, io) => {
   const groupId = req.params.groupId;
@@ -344,14 +345,16 @@ const postMessageToChannel = async (req, res, io) => {
   const newMessage = {
     messageId: new Date().getTime(),
     senderId,
-    content
+    content,
   };
 
   try {
     const { db, client } = await connectToDatabase();
     const groupsCollection = db.collection('groups');
+
+    // Update the specific group and channel by pushing the new message into the channel's messages array
     const result = await groupsCollection.updateOne(
-      { _id: new ObjectId(groupId), 'channels.channelId': new ObjectId(channelId) },
+      { _id: new ObjectId(groupId), 'channels._id': new ObjectId(channelId) },
       { $push: { 'channels.$.messages': newMessage } }
     );
 
@@ -359,6 +362,7 @@ const postMessageToChannel = async (req, res, io) => {
       return res.status(404).json({ message: 'Group or channel not found' });
     }
 
+    // Broadcast the message to all connected clients
     io.emit('messageBroadcast', newMessage);
     res.status(201).json({ message: 'Message posted successfully', messageData: newMessage });
     await client.close();
@@ -366,6 +370,7 @@ const postMessageToChannel = async (req, res, io) => {
     res.status(500).json({ message: 'Error posting message', err });
   }
 };
+
 
 const getGroupsAndChannelsForUser = async (req, res) => {
   const userId = req.params.userId;  // The user ID will be passed as a parameter
