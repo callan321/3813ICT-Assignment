@@ -1,8 +1,8 @@
 import { HttpClient } from "@angular/common/http";
-import { AuthService } from "../../services/auth.service";
 import { Component, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { CommonModule, NgForOf } from "@angular/common";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-groups',
@@ -22,7 +22,7 @@ export class GroupsComponent implements OnInit {
   groups: any[] = [];
   users: any[] = [];
 
-  // Initialize newGroup object for creating groups
+
   newGroup: any = {
     groupName: '',
     createdBy: '',
@@ -44,10 +44,6 @@ export class GroupsComponent implements OnInit {
 
   isSuperAdmin(): boolean {
     return this.authService.isSuperAdmin();
-  }
-
-  isGroupAdmin(): boolean {
-    return this.authService.isGroupAdmin();
   }
 
   loadGroups(): void {

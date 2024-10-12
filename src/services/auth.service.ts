@@ -48,7 +48,4 @@ export class AuthService {
     return this.hasRole('super_admin');
   }
 
-  isGroupAdmin(): boolean {
-    return this.hasRole('group_admin');
-  }
 }

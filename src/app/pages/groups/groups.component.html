@@ -1,7 +1,7 @@
 <h2 class="mt-4">Groups</h2>
 <h4 class="mt-4">Create New Group</h4>
 
-<div class="form-group mt-3" *ngIf="isSuperAdmin() || isGroupAdmin()">
+<div class="form-group mt-3" *ngIf="isSuperAdmin()">
   <label for="groupName">Group Name</label>
   <input [(ngModel)]="newGroup.groupName" type="text" id="groupName" class="form-control" placeholder="Enter group name" />
 
@@ -30,7 +30,7 @@
         <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let channel of group.channels">
           {{ channel.channelName }}
           <!-- Channel Delete Option (only for group admins and super admins) -->
-          <button *ngIf="isSuperAdmin() || isGroupAdmin()" (click)="removeChannelFromGroup(group._id, channel._id)" class="btn btn-danger btn-sm">
+          <button *ngIf="isSuperAdmin()" (click)="removeChannelFromGroup(group._id, channel._id)" class="btn btn-danger btn-sm">
             Del
           </button>
         </li>
@@ -57,7 +57,7 @@
               Promote to Admin
             </button>
             <!-- Remove Member Button (only for group admin or super admin) -->
-            <button *ngIf="isSuperAdmin() || (isGroupAdmin() && group.admins.includes(authService.getUserId()))"
+            <button *ngIf="isSuperAdmin()"
                     (click)="removeUserFromGroup(group._id, member, 'member')"
                     class="btn btn-sm btn-danger">
               Ban
@@ -68,7 +68,7 @@
     </td>
 
     <!-- Actions Column (Only show for Super Admin and Group Admin) -->
-    <td *ngIf="isSuperAdmin() || (isGroupAdmin() && group.admins.includes(authService.getUserId()))">
+    <td *ngIf="isSuperAdmin()">
       <div><input [(ngModel)]="group.newChannelName" class="form-control mb-2" placeholder="New channel name" /></div>
       <div><button (click)="addChannelToGroup(group._id, group.newChannelName)" class="btn btn-primary btn-sm mb-2">Create</button></div>
       <div><button (click)="deleteGroup(group._id)" class="btn btn-danger btn-sm">Delete Group</button></div>

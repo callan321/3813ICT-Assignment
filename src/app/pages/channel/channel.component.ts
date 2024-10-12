@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router'; // For route parameters
-import { HttpClient } from '@angular/common/http'; // For making HTTP requests
+import { ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { NgForOf } from '@angular/common';
-import { io, Socket } from 'socket.io-client'; // Import socket.io-client
-import { AuthService } from '../../services/auth.service'; // Assuming you have an AuthService to get the user info
+import { io, Socket } from 'socket.io-client';
+import {AuthService} from "../../../services/auth.service";
+
 
 @Component({
   selector: 'app-channel',

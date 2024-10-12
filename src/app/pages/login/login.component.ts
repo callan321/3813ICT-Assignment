@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from "../../services/auth.service";
 import {Router, ActivatedRoute, RouterLink} from "@angular/router";
 import {NgIf} from "@angular/common";
+import {AuthService} from "../../../services/auth.service";
 
 interface LoginResponse {
   message: string;

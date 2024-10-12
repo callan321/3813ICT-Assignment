@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { HomeComponent } from './home/home.component';
-import { AuthGuard } from '../services/auth.guard';
-import { SidebarComponent } from './sidebar/sidebar.component';
-import { GroupsComponent} from "./groups/groups.component";
-import {UsersComponent} from "./users/users.component";
-import {CreateUserComponent} from "./create-user/create-user.component";
-import {ChannelComponent} from "./channel/channel.component";
-import {SuperAdminGuard} from "../services/super.admin.guard";
+import { AuthGuard } from '../services/guards/auth.guard';
+import {SuperAdminGuard} from "../services/guards/super.admin.guard";
+import {LoginComponent} from "./pages/login/login.component";
+import {CreateUserComponent} from "./pages/create-user/create-user.component";
+import {SidebarComponent} from "./layouts/sidebar/sidebar.component";
+import {HomeComponent} from "./pages/home/home.component";
+import {UsersComponent} from "./pages/users/users.component";
+import {GroupsComponent} from "./pages/groups/groups.component";
+import {ChannelComponent} from "./pages/channel/channel.component";
 
 
 export const routes: Routes = [

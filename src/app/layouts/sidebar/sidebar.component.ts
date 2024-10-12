@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../services/auth.service';
 import { RouterOutlet, Router, RouterLink } from "@angular/router";
 import { NgForOf, NgIf } from "@angular/common";
+import {AuthService} from "../../../services/auth.service";
 
 interface Channel {
   channelId: string;
@@ -48,14 +48,7 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  canAccessUsers(): boolean {
-    return this.authService.isSuperAdmin();
-  }
 
-  // Only show the "Groups" section for Admin users
-  canAccessGroups(): boolean {
-    return this.authService.isSuperAdmin() || this.authService.isGroupAdmin();
-  }
 
   // Fetch groups and relevant data for the user
   getGroupsForUser(userId: string): void {
@@ -78,6 +71,9 @@ export class SidebarComponent implements OnInit {
     console.log('Selected Group:', this.selectedGroup._id, 'Channels:', this.filteredChannels);
   }
 
+  isSuperAdmin(): boolean {
+    return this.authService.isSuperAdmin()
+}
   // Logout the user
   confirmLogout(): void {
     this.authService.clearAuthData();

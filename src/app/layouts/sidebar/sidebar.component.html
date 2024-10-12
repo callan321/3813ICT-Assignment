@@ -10,14 +10,14 @@
       </li>
 
       <!-- Users Link (Visible only to Super Admins) -->
-      <li class="nav-item mb-2" *ngIf="canAccessUsers()">
+      <li class="nav-item mb-2" *ngIf="isSuperAdmin()">
         <a [routerLink]="['/users']" class="nav-link text-white py-3">
           <i class="bi bi-person-fill fs-4"></i>
         </a>
       </li>
 
       <!-- Groups Link (Visible only to Admins) -->
-      <li class="nav-item mb-2" *ngIf="canAccessGroups()">
+      <li class="nav-item mb-2" *ngIf="isSuperAdmin()">
         <a [routerLink]="['/groups']" class="nav-link text-white py-3">
           <i class="bi bi-people-fill fs-4"></i>
         </a>
