@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,8 @@ export class AuthService {
   private userIdKey = 'userId';
   private usernameKey = 'username';
   private rolesKey = 'roles';
+
+  constructor(private router: Router) {}
 
   // Store username, userId (as string), and roles
   saveUserSessionData(username: string, userId: string, roles: string[]): void {
@@ -37,6 +40,10 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return this.getUsername() !== null;
+  }
+  Logout(): void {
+    this.clearAuthData();
+    this.router.navigate(['/login']);
   }
 
   hasRole(role: string): boolean {

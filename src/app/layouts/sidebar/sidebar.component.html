@@ -26,18 +26,18 @@
       <!-- Groups (Only show group names) -->
       <li class="nav-item mb-2" *ngFor="let group of groups">
         <!-- Display first 3 letters of the group name -->
-        <a class="nav-link text-white py-3" (click)="selectGroup(group)" style="cursor: pointer;">
+        <button class="nav-link text-white py-3 btn btn-link" (click)="selectGroup(group)" style="cursor: pointer;">
           {{ group.groupName.substring(0, 3) }}
-        </a>
+        </button>
       </li>
     </ul>
 
     <!-- Logout Button -->
     <ul class="nav nav-pills flex-column text-center mt-2 mb-3">
       <li class="nav-item mb-2">
-        <a class="nav-link text-white py-3" (click)="confirmLogout()">
+        <button class="nav-link text-white py-3 btn btn-link" (click)="Logout()">
           <i class="bi bi-box-arrow-right fs-4"></i>
-        </a>
+        </button>
       </li>
     </ul>
   </nav>
@@ -49,7 +49,7 @@
     </div>
     <ul class="nav nav-pills flex-column">
       <li class="nav-item" *ngFor="let channel of filteredChannels">
-        <!-- Use an `a` tag with a regular `href` attribute -->
+
         <a
           href="/group/{{selectedGroup?._id}}/channel/{{channel.channelId}}"
           class="nav-link text-white py-2"

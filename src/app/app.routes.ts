@@ -8,12 +8,13 @@ import {HomeComponent} from "./pages/home/home.component";
 import {UsersComponent} from "./pages/users/users.component";
 import {GroupsComponent} from "./pages/groups/groups.component";
 import {ChannelComponent} from "./pages/channel/channel.component";
+import {LoginGuard} from "../services/guards/login.guard";
 
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  {path: 'register', component: CreateUserComponent },
+  { path: 'login', component: LoginComponent, canActivate : [LoginGuard] },
+  {path: 'register', component: CreateUserComponent, canActivate : [LoginGuard] },
   {
     path: '',
     component: SidebarComponent,
