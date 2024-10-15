@@ -23,7 +23,7 @@ export const routes: Routes = [
       { path: 'home', component: HomeComponent },
       { path: 'users', component: UsersComponent, canActivate: [SuperAdminGuard] },
       { path: 'groups', component: GroupsComponent },
-      { path: 'group/:groupId/channel/:channelId', component: ChannelComponent }
+      { path: 'channel/:channelId', component: ChannelComponent }
     ]
   },
 ];

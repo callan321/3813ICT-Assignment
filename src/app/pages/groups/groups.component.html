@@ -3,7 +3,7 @@
 
 <div class="form-group mt-3" *ngIf="isSuperAdmin()">
   <label for="groupName">Group Name</label>
-  <input [(ngModel)]="newGroup.groupName" type="text" id="groupName" class="form-control" placeholder="Enter group name" />
+  <input [(ngModel)]="newGroupName" type="text" id="groupName" class="form-control" placeholder="Enter group name" />
 
   <button (click)="createGroup()" class="btn btn-primary mt-3">Create Group</button>
 </div>
@@ -28,20 +28,28 @@
     <td>
       <ul class="list-group list-group-flush">
         <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let channel of group.channels">
-          {{ channel.channelName }}
+          {{ channel }}
+
           <!-- Channel Delete Option (only for group admins and super admins) -->
-          <button *ngIf="isSuperAdmin()" (click)="removeChannelFromGroup(group._id, channel._id)" class="btn btn-danger btn-sm">
+          <button *ngIf="isSuperAdmin()" (click)="removeChannelFromGroup(group._id, channel)" class="btn btn-danger btn-sm">
             Del
           </button>
         </li>
       </ul>
+      <!-- Add New Channel -->
+      <div *ngIf="isSuperAdmin()">
+        <input #channelNameInput class="form-control mt-2" placeholder="New channel name" />
+        <button (click)="addChannelToGroup(group._id, channelNameInput.value); channelNameInput.value=''" class="btn btn-primary btn-sm mt-2">
+          Create
+        </button>
+      </div>
     </td>
 
     <!-- Admins column -->
     <td>
       <ul class="list-group list-group-flush">
-        <li class="list-group-item" *ngFor="let admin of group.admins">
-          {{ getUsernameById(admin) }}
+        <li class="list-group-item" *ngFor="let adminId of group.admins">
+          {{ getUsernameById(adminId) }}
         </li>
       </ul>
     </td>
@@ -49,29 +57,27 @@
     <!-- Members column -->
     <td>
       <ul class="list-group list-group-flush">
-        <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let member of group.members">
-          {{ getUsernameById(member) }}
+        <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let memberId of group.members">
+          {{ getUsernameById(memberId) }}
           <span class="d-flex">
-            <!-- Upgrade to Admin Button (only for super admins) -->
-            <button *ngIf="isSuperAdmin() && !group.admins.includes(member)" (click)="upgradeToAdmin(group._id, member)" class="btn btn-sm btn-success mr-2">
-              Promote to Admin
-            </button>
+              <!-- Upgrade to Admin Button (only for super admins) -->
+              <button *ngIf="isSuperAdmin() && !group.admins.includes(memberId)" (click)="upgradeToAdmin(group._id, memberId)" class="btn btn-sm btn-success mr-2">
+                Promote to Admin
+              </button>
             <!-- Remove Member Button (only for group admin or super admin) -->
-            <button *ngIf="isSuperAdmin()"
-                    (click)="removeUserFromGroup(group._id, member, 'member')"
-                    class="btn btn-sm btn-danger">
-              Ban
-            </button>
-          </span>
+              <button *ngIf="isSuperAdmin()"
+                      (click)="removeUserFromGroup(group._id, memberId, 'member')"
+                      class="btn btn-sm btn-danger">
+                Ban
+              </button>
+            </span>
         </li>
       </ul>
     </td>
 
     <!-- Actions Column (Only show for Super Admin and Group Admin) -->
     <td *ngIf="isSuperAdmin()">
-      <div><input [(ngModel)]="group.newChannelName" class="form-control mb-2" placeholder="New channel name" /></div>
-      <div><button (click)="addChannelToGroup(group._id, group.newChannelName)" class="btn btn-primary btn-sm mb-2">Create</button></div>
-      <div><button (click)="deleteGroup(group._id)" class="btn btn-danger btn-sm">Delete Group</button></div>
+      <button (click)="deleteGroup(group._id)" class="btn btn-danger btn-sm">Delete Group</button>
     </td>
   </tr>
   </tbody>

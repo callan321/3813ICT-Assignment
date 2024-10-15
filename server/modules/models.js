@@ -16,17 +16,10 @@ class Group {
     this.createdBy = createdBy;
     this.admins = admins;
     this.members = members;
-    this.channels = channels; // Channel reference
+    this.channels = channels; // channel ids
   }
 }
 
-// abstract class
-class ChannelReference {
-  constructor(_id, channelName) {
-    this._id = new ObjectId();
-    this.channelName = channelName;
-  }
-}
 
 const { ObjectId } = require('mongodb');
 

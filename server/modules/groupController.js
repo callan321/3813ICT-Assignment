@@ -132,6 +132,7 @@ const removeChannelFromGroup = async (req, res) => {
   const groupId = req.params.groupId;
   const channelId = req.params.channelId;
 
+  // Check if IDs are valid
   if (!ObjectId.isValid(groupId) || !ObjectId.isValid(channelId)) {
     return res.status(400).json({ message: 'Invalid ID format' });
   }
@@ -140,9 +141,10 @@ const removeChannelFromGroup = async (req, res) => {
     const { db, client } = await connectToDatabase();
     const groupsCollection = db.collection('groups');
 
+    // Perform the update to remove the channel (directly as an ObjectId in the array)
     const result = await groupsCollection.updateOne(
       { _id: new ObjectId(groupId) },
-      { $pull: { channels: { _id: new ObjectId(channelId) } } }
+      { $pull: { channels: new ObjectId(channelId) } }  // <-- Corrected the $pull query
     );
 
     if (result.modifiedCount === 0) {
@@ -182,47 +184,6 @@ const upgradeToAdmin = async (req, res) => {
   }
 };
 
-// Get group and channel information
-const getGroupChannelInfo = async (req, res) => {
-  const groupId = req.params.groupId;
-  const channelId = req.params.channelId;
-
-  try {
-    // Establish MongoDB connection
-    const { db, client } = await connectToDatabase();
-    const groupsCollection = db.collection('groups');
-
-    // Find the group by groupId
-    const group = await groupsCollection.findOne({ _id: new ObjectId(groupId) });
-
-    if (!group) {
-      await client.close();
-      return res.status(404).json({ message: 'Group not found' });
-    }
-
-    // Find the specific channel within the group
-    const channel = group.channels.find((c) => c._id.toString() === channelId);
-
-    if (!channel) {
-      await client.close();
-      return res.status(404).json({ message: 'Channel not found' });
-    }
-
-    // Close the MongoDB connection once we are done
-    await client.close();
-
-    // Return group and channel details
-    return res.json({
-      groupName: group.groupName,
-      channelName: channel.channelName,
-      messages: channel.messages
-    });
-  } catch (err) {
-    // Handle any error that occurs and send a 500 error response
-    console.error('Error fetching group or channel info:', err);
-    res.status(500).json({ message: 'Error fetching group or channel info', error: err.message });
-  }
-};
 
 // Add a new channel to a group
 const addChannelToGroup = async (req, res) => {
@@ -236,17 +197,24 @@ const addChannelToGroup = async (req, res) => {
   try {
     const { db, client } = await connectToDatabase();
     const groupsCollection = db.collection('groups');
+    const channelsCollection = db.collection('channels');
 
+    // Create new channel document
     const newChannel = {
       _id: new ObjectId(),
       channelName,
       createdBy: new ObjectId(createdBy),
+      groupId: new ObjectId(groupId),
       messages: [],
     };
 
+    // Insert the new channel into the 'channels' collection
+    await channelsCollection.insertOne(newChannel);
+
+    // Add the channel's _id to the group's 'channels' array
     const result = await groupsCollection.updateOne(
       { _id: new ObjectId(groupId) },
-      { $push: { channels: newChannel } }
+      { $push: { channels: newChannel._id } }
     );
 
     if (result.matchedCount === 0) {
@@ -254,7 +222,7 @@ const addChannelToGroup = async (req, res) => {
       return res.status(404).json({ message: 'Group not found' });
     }
 
-    res.status(201).json({ message: 'Channel added to group', channel: newChannel });
+    res.status(201).json({ message: 'Channel added to group', channelId: newChannel._id });
     await client.close();
   } catch (err) {
     console.error('Error adding channel:', err);
@@ -278,16 +246,13 @@ const getGroupsAndChannelsForUser = async (req, res) => {
       ]
     }).toArray();
 
-    // For each group, map over its channels and set channelId from MongoDB's _id
+    // For each group, map over its channels and convert the channel IDs to strings
     const groupsWithChannelIds = groups.map(group => ({
       ...group,
-      channels: group.channels.map(channel => ({
-        ...channel,
-        channelId: channel._id
-      }))
+      channels: group.channels.map(channel => channel.toString())  // Convert channel ID to string
     }));
 
-    // Return the modified groups with channelId
+    // Return the modified groups with channel IDs as strings
     res.json(groupsWithChannelIds);
     await client.close();
   } catch (err) {
@@ -295,6 +260,7 @@ const getGroupsAndChannelsForUser = async (req, res) => {
     res.status(500).json({ message: 'Error fetching groups and channels', error: err.message });
   }
 };
+
 
 
 module.exports = {
@@ -306,7 +272,6 @@ module.exports = {
   removeAdminFromGroup,
   removeChannelFromGroup,
   upgradeToAdmin,
-  getGroupChannelInfo,
   addChannelToGroup,
   getGroupsAndChannelsForUser,
 };

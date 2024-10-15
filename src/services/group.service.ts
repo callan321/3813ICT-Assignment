@@ -1,33 +1,95 @@
+// group.service.ts
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { AuthService } from './auth.service';
-import { GroupApiService } from './api/group-api.service';
-import {Channel, Group} from "../models"; // Import the API service
+import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
 
+
+import { Group, Channel } from '../models';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GroupService {
+  private apiBaseUrl = 'http://localhost:3000/api';
+
   constructor(
-    private groupApiService: GroupApiService, // API service for fetching data
-    private authService: AuthService          // AuthService for authentication logic
+    private http: HttpClient,
+    private authService: AuthService
   ) {}
 
-
-  // Fetch groups for the logged-in user using GroupApiService
+  // Fetch groups for the current user
   getGroupsForUser(): Observable<Group[]> {
-    const userId = this.authService.getUserId(); // Get userId from AuthService
+    const userId = this.authService.getUserId();
     if (!userId) {
-      throw new Error('User is not authenticated'); // Handle missing userId (optional)
+      return of([]); // Return empty array if not authenticated
     }
-    return this.groupApiService.getGroupsForUser(userId); // Use GroupApiService to fetch groups
+    return this.http.get<Group[]>(`${this.apiBaseUrl}/groups/${userId}`);
   }
 
-  // Get filtered channels for a selected group
-  getFilteredChannels(group: Group): Channel[] {
-    return group.channels; // Delegate filtering logic
+  // Fetch channel details by channel IDs
+  getChannelsByIds(channelIds: string[]): Observable<Channel[]> {
+    if (channelIds.length === 0) {
+      return of([]);
+    }
+    // Assuming your backend has an endpoint to get multiple channels by IDs
+    return this.http.post<Channel[]>(`${this.apiBaseUrl}/channels/batch`, { channelIds });
   }
 
+  // Get channels for a selected group
+  getChannelsForGroup(group: Group): Observable<Channel[]> {
+    if (!group.channels || group.channels.length === 0) {
+      return of([]);
+    }
+    return this.getChannelsByIds(group.channels);
+  }
 
+  // Create a new group
+  createGroup(groupName: string): Observable<Group> {
+    const createdBy = this.authService.getUserId();
+    const newGroup = {
+      groupName: groupName,
+      createdBy: createdBy,
+      admins: [createdBy],
+      members: [createdBy],
+      channels: []
+    };
+    return this.http.post<Group>(`${this.apiBaseUrl}/groups`, newGroup);
+  }
+
+  // Delete a group
+  deleteGroup(groupId: string): Observable<any> {
+    return this.http.delete(`${this.apiBaseUrl}/groups/${groupId}`);
+  }
+
+  // Add a new channel to a group
+  addChannelToGroup(groupId: string, channelName: string): Observable<any> {
+    const createdBy = this.authService.getUserId();
+    const channelData = {
+      channelName: channelName,
+      createdBy: createdBy
+    };
+    return this.http.post(`${this.apiBaseUrl}/groups/${groupId}/add-channel`, channelData);
+  }
+
+  // Remove a channel from a group
+  removeChannelFromGroup(groupId: string, channelId: string): Observable<any> {
+    return this.http.put(`${this.apiBaseUrl}/groups/${groupId}/remove-channel/${channelId}`, {});
+  }
+
+  // Remove a user from a group
+  removeUserFromGroup(groupId: string, userId: string, role: string): Observable<any> {
+    const endpoint = role === 'admin' ? 'remove-admin' : 'remove-member';
+    return this.http.put(`${this.apiBaseUrl}/groups/${groupId}/${endpoint}/${userId}`, {});
+  }
+
+  // Upgrade a user to admin
+  upgradeToAdmin(groupId: string, userId: string): Observable<any> {
+    return this.http.put(`${this.apiBaseUrl}/groups/${groupId}/upgrade-to-admin/${userId}`, {});
+  }
+
+  // Fetch all groups
+  getAllGroups(): Observable<Group[]> {
+    return this.http.get<Group[]>(`${this.apiBaseUrl}/groups`);
+  }
 }

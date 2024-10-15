@@ -44,7 +44,6 @@ app.delete('/api/users/:id', userController.deleteUser);
 
 // Groups and channel (non-socket) Endpoints
 app.get('/api/groups', groupController.getAllGroups);
-app.get('/api/groups/:userId', groupController.getGroupsAndChannelsForUser);
 app.post('/api/groups', groupController.createGroup);
 app.put('/api/groups/:groupId', groupController.updateGroup);
 app.delete('/api/groups/:groupId', groupController.deleteGroup);
@@ -53,10 +52,12 @@ app.put('/api/groups/:groupId/remove-admin/:adminId', groupController.removeAdmi
 app.put('/api/groups/:groupId/remove-channel/:channelId', groupController.removeChannelFromGroup);
 app.put('/api/groups/:groupId/upgrade-to-admin/:userId', groupController.upgradeToAdmin);
 app.post('/api/groups/:groupId/add-channel', groupController.addChannelToGroup);
-app.get('/api/group/:groupId/channel/:channelId', groupController.getGroupChannelInfo);
+app.get('/api/groups/:userId', groupController.getGroupsAndChannelsForUser);
 
 // Channel-specific message endpoint handled by Socket.IO
-app.post('/api/group/:groupId/channel/:channelId/message', (req, res) => channelController.postMessageToChannel(req, res, io));
+app.post('/api/channel/:channelId/message', (req, res) => channelController.postMessageToChannel(req, res, io));
+app.get('/api/channel/:channelId', channelController.getChannelById);
+
 
 // Login Endpoint
 app.post('/api/login', loginUser);

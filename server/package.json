@@ -5,7 +5,7 @@
   "scripts": {
     "test": "mocha",
     "start": "node server.js",
-    "seed": "node seed.js",
+    "seed": "node modules/seed.js",
     "dev" : "nodemon server.js"
   },
   "author": "",

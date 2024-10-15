@@ -1,52 +1,52 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet, RouterLink } from "@angular/router";
+import {RouterLink, RouterOutlet} from "@angular/router";
 import { NgForOf, NgIf } from "@angular/common";
 import { AuthService } from "../../../services/auth.service";
-import {GroupService} from "../../../services/group.service";
-import {Channel, Group} from "../../../models";
-
+import { GroupService } from "../../../services/group.service";
+import { Group } from "../../../models";
 
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   standalone: true,
   imports: [
-    RouterOutlet,
     NgForOf,
     RouterLink,
-    NgIf
+    NgIf,
+    RouterOutlet
   ],
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-  userId: string | null = null;
   groups: Group[] = [];
   selectedGroup: Group | null = null;
-  filteredChannels: Channel[] = [];
+  filteredChannels: string[] = []; // Array of channel IDs
 
   constructor(
     private authService: AuthService,
     private groupService: GroupService,
   ) {}
 
-
   ngOnInit(): void {
     this.loadGroups();
   }
 
-  // Use GroupService to load groups
+  // Load groups for the user
   loadGroups(): void {
     this.groupService.getGroupsForUser().subscribe(
-      (groupsData) => {
+      (groupsData: Group[]) => {
         this.groups = groupsData;
+      },
+      error => {
+        console.error('Error fetching groups:', error);
       }
     );
   }
 
-  // Use GroupService to filter channels
+  // Filter channels when a group is selected
   selectGroup(group: Group): void {
     this.selectedGroup = group;
-    this.filteredChannels = this.groupService.getFilteredChannels(group);
+    this.filteredChannels = group.channels; // Since channels are IDs, we use them directly
   }
 
   isSuperAdmin(): boolean {
