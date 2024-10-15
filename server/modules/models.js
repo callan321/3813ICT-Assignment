@@ -1,5 +1,6 @@
 class User {
   constructor(username, email, password, roles = ['user'], groups = []) {
+    this._id = new ObjectId();
     this.username = username;
     this.email = email;
     this.password = password;
@@ -10,27 +11,20 @@ class User {
 
 class Group {
   constructor(groupName, createdBy, admins = [], members = [], channels = [], channels1) {
+    this._id = new ObjectId();
     this.groupName = groupName;
     this.createdBy = createdBy;
     this.admins = admins;
     this.members = members;
-    this.channels = channels;
+    this.channels = channels; // Channel reference
   }
+}
 
-  addMember(userId) {
-    if (!this.members.includes(userId)) {
-      this.members.push(userId);
-    }
-  }
-
-  addAdmin(userId) {
-    if (!this.admins.includes(userId)) {
-      this.admins.push(userId);
-    }
-  }
-
-  addChannel(channel) {
-    this.channels.push(channel);
+// abstract class
+class ChannelReference {
+  constructor(_id, channelName) {
+    this._id = new ObjectId();
+    this.channelName = channelName;
   }
 }
 
@@ -38,23 +32,22 @@ const { ObjectId } = require('mongodb');
 
 class Channel {
   constructor(channelName, createdBy, groupId, messages = []) {
-    this._id = new ObjectId(); // This will assign a unique ObjectId to each channel.
+    this._id = new ObjectId();
     this.channelName = channelName;
     this.groupId = groupId;
     this.createdBy = createdBy;
-    this.messages = messages;
+    this.messages = messages; // should be of class message
   }
 
-  addMessage(message) {
-    this.messages.push(message);
-  }
 }
 
 
 class Message {
-  constructor(senderId, content) {
+  constructor(senderId, content, type) {
+    this._id = new ObjectId();
     this.senderId = senderId;
     this.content = content;
+    this.type = type // should be img or msg;
   }
 }
 

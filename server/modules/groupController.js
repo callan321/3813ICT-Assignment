@@ -1,115 +1,6 @@
-const { MongoClient, ObjectId } = require('mongodb');
-const url = 'mongodb://localhost:27017';
-const dbName = 'ChatApp';
-
-// Import models
-const { User, Group, Channel, Message } = require('./models');
-
-// Database connection helper function
-const connectToDatabase = async () => {
-  const client = new MongoClient(url);
-  await client.connect();
-  const db = client.db(dbName);
-  return { db, client };
-};
-
-// Get all users
-const getAllUsers = async (req, res) => {
-  try {
-    const { db, client } = await connectToDatabase();
-    const usersCollection = db.collection('users');
-    const users = await usersCollection.find({}).toArray();
-    res.json(users);
-    await client.close();
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching users', err });
-  }
-};
-
-// Create a new user
-const createUser = async (req, res) => {
-  const newUser = new User(
-    req.body.username,
-    req.body.email,
-    req.body.password,
-    req.body.roles,
-    req.body.groups
-  );
-
-  try {
-    const { db, client } = await connectToDatabase();
-    const usersCollection = db.collection('users');
-    const result = await usersCollection.insertOne(newUser);
-
-    res.status(201).json({ message: 'User created', user: { _id: result.insertedId, ...newUser } });
-    await client.close();
-  } catch (err) {
-    res.status(500).json({ message: 'Error creating user', err });
-  }
-};
-
-// Update a user
-const updateUser = async (req, res) => {
-  const userId = req.params.id;
-
-  // Ensure the ID is a valid ObjectId
-  if (!ObjectId.isValid(userId)) {
-    return res.status(400).json({ message: 'Invalid user ID format' });
-  }
-
-  try {
-    const { db, client } = await connectToDatabase();
-    const usersCollection = db.collection('users');
-
-    // Attempt to update the user with the provided ID
-    const result = await usersCollection.updateOne(
-      { _id: new ObjectId(userId) },
-      { $set: req.body }
-    );
-
-    // Handle the case where no document matched the provided ID
-    if (result.matchedCount === 0) {
-      await client.close();
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    res.status(200).json({ message: 'User updated', user: req.body });
-    await client.close();
-  } catch (err) {
-    console.error('Error updating user:', err);
-    res.status(500).json({ message: 'Error updating user', err });
-  }
-};
-
-// Delete a user
-const deleteUser = async (req, res) => {
-  const userId = req.params.id;
-
-  // Ensure the ID is a valid ObjectId
-  if (!ObjectId.isValid(userId)) {
-    return res.status(400).json({ message: 'Invalid user ID format' });
-  }
-
-  try {
-    const { db, client } = await connectToDatabase();
-    const usersCollection = db.collection('users');
-
-    // Attempt to delete the user with the provided ID
-    const result = await usersCollection.deleteOne({ _id: new ObjectId(userId) });
-
-    // Handle the case where no document matched the provided ID
-    if (result.deletedCount === 0) {
-      await client.close();
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    res.status(200).json({ message: 'User deleted' });
-    await client.close();
-  } catch (err) {
-    console.error('Error deleting user:', err);
-    res.status(500).json({ message: 'Error deleting user', err });
-  }
-};
+const { ObjectId } = require('mongodb');
+const { connectToDatabase } = require('./db');
+const { Group } = require('./models');
 
 // Get all groups
 const getAllGroups = async (req, res) => {
@@ -284,6 +175,48 @@ const upgradeToAdmin = async (req, res) => {
   }
 };
 
+// Get group and channel information
+const getGroupChannelInfo = async (req, res) => {
+  const groupId = req.params.groupId;
+  const channelId = req.params.channelId;
+
+  try {
+    // Establish MongoDB connection
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+
+    // Find the group by groupId
+    const group = await groupsCollection.findOne({ _id: new ObjectId(groupId) });
+
+    if (!group) {
+      await client.close();
+      return res.status(404).json({ message: 'Group not found' });
+    }
+
+    // Find the specific channel within the group
+    const channel = group.channels.find((c) => c._id.toString() === channelId);
+
+    if (!channel) {
+      await client.close();
+      return res.status(404).json({ message: 'Channel not found' });
+    }
+
+    // Close the MongoDB connection once we are done
+    await client.close();
+
+    // Return group and channel details
+    return res.json({
+      groupName: group.groupName,
+      channelName: channel.channelName,
+      messages: channel.messages
+    });
+  } catch (err) {
+    // Handle any error that occurs and send a 500 error response
+    console.error('Error fetching group or channel info:', err);
+    res.status(500).json({ message: 'Error fetching group or channel info', error: err.message });
+  }
+};
+
 // Add a new channel to a group
 const addChannelToGroup = async (req, res) => {
   const { groupId } = req.params;
@@ -322,93 +255,7 @@ const addChannelToGroup = async (req, res) => {
   }
 };
 
-
-// Get group and channel information
-const getGroupChannelInfo = async (req, res) => {
-  const groupId = req.params.groupId;
-  const channelId = req.params.channelId;
-
-  try {
-    // Establish MongoDB connection
-    const { db, client } = await connectToDatabase();
-    const groupsCollection = db.collection('groups');
-
-    // Find the group by groupId
-    const group = await groupsCollection.findOne({ _id: new ObjectId(groupId) });
-
-    if (!group) {
-      await client.close();
-      return res.status(404).json({ message: 'Group not found' });
-    }
-
-    // Find the specific channel within the group
-    const channel = group.channels.find((c) => c._id.toString() === channelId);  // Potential source of error
-
-    if (!channel) {
-      await client.close();
-      return res.status(404).json({ message: 'Channel not found' });
-    }
-
-    // Close the MongoDB connection once we are done
-    await client.close();
-
-    // Return group and channel details
-    return res.json({
-      groupName: group.groupName,
-      channelName: channel.channelName,
-      messages: channel.messages
-    });
-  } catch (err) {
-    // Handle any error that occurs and send a 500 error response
-    console.error('Error fetching group or channel info:', err);
-    res.status(500).json({ message: 'Error fetching group or channel info', error: err.message });
-  }
-};
-
-
-// Post a new message to a channel and broadcast it
-// Post a new message to a channel and broadcast it
-const postMessageToChannel = async (req, res, io) => {
-  const groupId = req.params.groupId;
-  const channelId = req.params.channelId;
-  const { senderId, content } = req.body;
-
-  if (!content || !senderId) {
-    return res.status(400).json({ message: 'Sender ID and content are required.' });
-  }
-
-  const newMessage = {
-    messageId: new Date().getTime(),
-    senderId,
-    content,
-  };
-
-  try {
-    const { db, client } = await connectToDatabase();
-    const groupsCollection = db.collection('groups');
-
-    // Update the specific group and channel by pushing the new message into the channel's messages array
-    const result = await groupsCollection.updateOne(
-      { _id: new ObjectId(groupId), 'channels._id': new ObjectId(channelId) },
-      { $push: { 'channels.$.messages': newMessage } }
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: 'Group or channel not found' });
-    }
-
-    // Emit the message to the specific channel room
-    io.to(channelId).emit('messageBroadcast', newMessage);
-
-    res.status(201).json({ message: 'Message posted successfully', messageData: newMessage });
-    await client.close();
-  } catch (err) {
-    res.status(500).json({ message: 'Error posting message', err });
-  }
-};
-
-
-
+// Get groups and channels for a user
 const getGroupsAndChannelsForUser = async (req, res) => {
   const userId = req.params.userId;  // The user ID will be passed as a parameter
 
@@ -444,10 +291,6 @@ const getGroupsAndChannelsForUser = async (req, res) => {
 
 
 module.exports = {
-  getAllUsers,
-  createUser,
-  updateUser,
-  deleteUser,
   getAllGroups,
   createGroup,
   updateGroup,
@@ -456,8 +299,7 @@ module.exports = {
   removeAdminFromGroup,
   removeChannelFromGroup,
   upgradeToAdmin,
-  addChannelToGroup,
   getGroupChannelInfo,
-  postMessageToChannel,
-  getGroupsAndChannelsForUser
+  addChannelToGroup,
+  getGroupsAndChannelsForUser,
 };
