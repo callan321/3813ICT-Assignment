@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {RouterLink, RouterOutlet} from "@angular/router";
 import { NgForOf, NgIf } from "@angular/common";
-import { AuthService } from "../../../services/auth.service";
-import { GroupService } from "../../../services/group.service";
-import { Group } from "../../../models";
+import { AuthService } from "../../services/auth.service";
+import { GroupService } from "../../services/group.service";
+import { Group } from "../../models/models";
 
 @Component({
   selector: 'app-sidebar',

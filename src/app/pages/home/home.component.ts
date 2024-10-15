@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from "@angular/forms";
-import {AuthService} from "../../../services/auth.service";
-import {GroupService} from "../../../services/group.service";
+import {AuthService} from "../../services/auth.service";
+import {GroupService} from "../../services/group.service";
 import {NgIf} from "@angular/common";
 
 

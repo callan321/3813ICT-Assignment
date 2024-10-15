@@ -8,6 +8,7 @@ const userController = require('./modules/userController');
 const groupController = require('./modules/groupController');
 const channelController = require('./modules/channelController');
 const {join} = require("node:path");
+const callServer = require("./callServer");
 
 
 // sever
@@ -73,6 +74,9 @@ app.use((req, res) => {
 
 // Start the server
 server.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Main Server is running on port ${port}`);
   console.log(`http://localhost:${port}`);
 });
+
+// call the sever that handles calls
+callServer();

@@ -3,7 +3,7 @@ import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common
 import { FormsModule } from '@angular/forms';
 import {Router, ActivatedRoute, RouterLink} from "@angular/router";
 import {NgIf} from "@angular/common";
-import {AuthService} from "../../../services/auth.service";
+import {AuthService} from "../../services/auth.service";
 
 interface LoginResponse {
   message: string;

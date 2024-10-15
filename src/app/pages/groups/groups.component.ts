@@ -1,10 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
-import { AuthService } from "../../../services/auth.service";
-import { Group, User } from "../../../models";
-import { GroupService } from "../../../services/group.service";
-import { UserService } from "../../../services/user.service";
+import { AuthService } from "../../services/auth.service";
+import { Group, User } from "../../models/models";
+import { GroupService } from "../../services/group.service";
+import { UserService } from "../../services/user.service";
 
 @Component({
   selector: 'app-groups',

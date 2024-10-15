@@ -4,8 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import {NgForOf, NgIf} from '@angular/common';
 import { io, Socket } from 'socket.io-client';
-import {AuthService} from "../../../services/auth.service";
-import {ChannelService} from "../../../services/channel.service";
+import {AuthService} from "../../services/auth.service";
+import {ChannelService} from "../../services/channel.service";
 
 
 @Component({
