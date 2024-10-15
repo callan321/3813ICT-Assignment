@@ -9,7 +9,7 @@ import {UsersComponent} from "./pages/users/users.component";
 import {GroupsComponent} from "./pages/groups/groups.component";
 import {ChannelComponent} from "./pages/channel/channel.component";
 import {LoginGuard} from "../services/guards/login.guard";
-import {ProfileComponent} from "./profile/profile.component";
+import {ProfileComponent} from "./pages/profile/profile.component";
 
 
 export const routes: Routes = [

@@ -7,6 +7,7 @@ const socketHandler = require('./modules/socket');
 const userController = require('./modules/userController');
 const groupController = require('./modules/groupController');
 const channelController = require('./modules/channelController');
+const {join} = require("node:path");
 
 
 // sever
@@ -15,7 +16,6 @@ const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 
 // Middleware
-app.use(cors());
 app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:4200',
@@ -56,9 +56,12 @@ app.get('/api/groups/:userId', groupController.getGroupsAndChannelsForUser);
 app.put('/api/groups/:groupId/add-user/:userId', groupController.addUserToGroup);
 
 // Channel-specific message endpoint handled by Socket.IO
-app.post('/api/channel/:channelId/message', (req, res) => channelController.postMessageToChannel(req, res, io));
 app.get('/api/channel/:channelId', channelController.getChannelById);
+app.post('/api/channel/:channelId/message', (req, res) => channelController.postMessageToChannel(req, res, io));
+app.post('/api/channel/:channelId/upload-image', (req, res) => channelController.uploadImageToChannel(req, res, io));
 
+// images being served statically
+app.use('/images', express.static(join(__dirname, 'images')));
 
 // Login Endpoint
 app.post('/api/login', loginUser);

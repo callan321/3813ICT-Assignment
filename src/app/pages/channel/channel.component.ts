@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { NgForOf } from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 import { io, Socket } from 'socket.io-client';
 import {AuthService} from "../../../services/auth.service";
 import {ChannelService} from "../../../services/channel.service";
@@ -14,15 +14,18 @@ import {ChannelService} from "../../../services/channel.service";
   standalone: true,
   imports: [
     FormsModule,
-    NgForOf
+    NgForOf,
+    NgIf
   ],
   styleUrls: ['./channel.component.css']
 })
 export class ChannelComponent implements OnInit {
+  uploading: boolean = false;
   channelId: string | null = null;
   channelName: string = '';
   messages: any[] = [];
   newMessage: string = '';
+  selectedFile: File | null = null; // To store the selected image file
   senderId: string | null = ''; // Current user's ID
 
   constructor(
@@ -59,7 +62,7 @@ export class ChannelComponent implements OnInit {
     );
   }
 
-  // Send a new message
+  // Send a new text message
   sendMessage(): void {
     if (this.newMessage.trim() && this.channelId) {
       this.channelService.sendMessage(this.channelId, this.senderId!, this.newMessage).subscribe(
@@ -71,6 +74,37 @@ export class ChannelComponent implements OnInit {
         }
       );
     }
+  }
+
+  // Handle file selection for image upload
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0]; // Get the selected file
+    }
+  }
+
+  // Upload the selected image
+  uploadImage(): void {
+    if (this.selectedFile && this.channelId && this.senderId) {
+      console.log('Uploading image...');
+      this.channelService.uploadImage(this.channelId, this.senderId, this.selectedFile).subscribe(
+        (response: any) => {
+          console.log('Image upload response:', response); // Log success
+          this.selectedFile = null; // Clear file after successful upload
+          // No need to emit, as Socket.IO will broadcast the message from the server
+        },
+        (error) => {
+          console.error('Error uploading image:', error);
+        }
+      );
+    }
+  }
+
+
+  // Helper function to get the full URL for the image
+  getImageUrl(filename: string): string {
+    return `http://localhost:3000/images/${filename}`;
   }
 
   // Listen for real-time messages from Socket.IO

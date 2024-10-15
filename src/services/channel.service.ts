@@ -40,4 +40,21 @@ export class ChannelService {
       });
     });
   }
+
+
+  // ChannelService (Angular)
+  uploadImage(channelId: string, senderId: string, file: File): Observable<any> {
+    const apiUrl = `${this.apiBaseUrl}/channel/${channelId}/upload-image`;
+
+    // Create FormData to send the image file
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('senderId', senderId);
+
+    // Upload the image via HTTP (no need to emit via Socket.IO from the client)
+    return this.http.post(apiUrl, formData);
+  }
+
+
+
 }

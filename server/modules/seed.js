@@ -1,8 +1,29 @@
-// seedDatabase.js
-
 const { ObjectId } = require('mongodb');
 const { connectToDatabase } = require('./db');
 const { User, Group, Channel, Message } = require('./models');
+const fs = require('fs');
+const path = require('path');
+
+
+(async function clearImagesDirectory() {
+  // Correct path to navigate one directory up and then into 'images'
+  const imagesDir = path.join(__dirname, '..', 'images');
+
+  // Check if the images directory exists
+  if (fs.existsSync(imagesDir)) {
+    // Read all files in the directory
+    const files = fs.readdirSync(imagesDir);
+
+    // Delete each file
+    for (const file of files) {
+      fs.unlinkSync(path.join(imagesDir, file));
+      console.log(`Deleted file: ${file}`);
+    }
+  } else {
+    console.log('No images directory found. Skipping image deletion.');
+  }
+})();
+
 
 (async function seedDatabase() {
   try {
@@ -58,8 +79,8 @@ const { User, Group, Channel, Message } = require('./models');
     console.log('Added channel to group');
 
     // Create messages and add them to the channel
-    const message1 = new Message(user1._id, 'Hello, this is a test message', 'msg');
-    const message2 = new Message(user2._id, 'Hello, reply to test message', 'msg');
+    const message1 = new Message(user1._id, 'Hello, this is a test message', 'txt');
+    const message2 = new Message(user2._id, 'Hello, reply to test message', 'txt');
 
     // Update the channel to include the messages
     await db.collection('channels').updateOne(
