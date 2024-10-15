@@ -132,22 +132,29 @@ const removeChannelFromGroup = async (req, res) => {
   const groupId = req.params.groupId;
   const channelId = req.params.channelId;
 
+  if (!ObjectId.isValid(groupId) || !ObjectId.isValid(channelId)) {
+    return res.status(400).json({ message: 'Invalid ID format' });
+  }
+
   try {
     const { db, client } = await connectToDatabase();
     const groupsCollection = db.collection('groups');
+
     const result = await groupsCollection.updateOne(
       { _id: new ObjectId(groupId) },
-      { $pull: { channels: { channelId: new ObjectId(channelId) } } }
+      { $pull: { channels: { _id: new ObjectId(channelId) } } }
     );
 
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: 'Group not found' });
+    if (result.modifiedCount === 0) {
+      await client.close();
+      return res.status(404).json({ message: 'Channel not found in group' });
     }
 
     res.json({ message: 'Channel removed from group' });
     await client.close();
   } catch (err) {
-    res.status(500).json({ message: 'Error removing channel from group', err });
+    console.error('Error removing channel from group:', err);
+    res.status(500).json({ message: 'Error removing channel from group', error: err.message });
   }
 };
 
