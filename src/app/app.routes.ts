@@ -10,6 +10,7 @@ import {GroupsComponent} from "./pages/groups/groups.component";
 import {ChannelComponent} from "./pages/channel/channel.component";
 import {LoginGuard} from "./services/guards/login.guard";
 import {ProfileComponent} from "./pages/profile/profile.component";
+import {VideosComponent} from "./videos/videos.component";
 
 
 export const routes: Routes = [
@@ -25,7 +26,8 @@ export const routes: Routes = [
       // { path: 'users', component: UsersComponent, canActivate: [SuperAdminGuard] },
       { path: 'profile', component: ProfileComponent },
       { path: 'groups', component: GroupsComponent },
-      { path: 'channel/:channelId', component: ChannelComponent }
+      { path: 'channel/:channelId', component: ChannelComponent },
+      {path: 'video',  component: VideosComponent}
     ]
   },
 ];

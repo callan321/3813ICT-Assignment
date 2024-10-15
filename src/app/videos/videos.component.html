@@ -1,1 +1,25 @@
-<p>videos works!</p>
+<div class="container">
+  <h2>Video Chat</h2>
+
+  <div class="row">
+    <div class="col">
+      <h4>Local Video</h4>
+      <!-- Display local video stream -->
+      <video id="localVideo" autoplay muted></video>
+    </div>
+
+    <div class="col" *ngFor="let peer of connectedPeers">
+      <h4>Remote Video from {{ peer.peerId }}</h4>
+      <!-- Display remote video streams -->
+      <video [srcObject]="peer.stream" autoplay></video>
+    </div>
+  </div>
+
+  <h3>Available Peers</h3>
+  <ul>
+    <li *ngFor="let peer of availablePeers">
+      {{ peer }}
+      <button (click)="callPeer(peer)">Call</button>
+    </li>
+  </ul>
+</div>

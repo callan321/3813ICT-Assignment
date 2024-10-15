@@ -1,14 +1,12 @@
-// models.ts
-
 export interface Message {
   _id: string;
   senderId: string;
   content: string;
-  type: string; // 'img' or 'msg'
+  type: string; // 'img' or 'txt'
 }
 
 export interface Channel {
-  _id: string; // MongoDB ObjectId as string
+  _id: string;
   channelName: string;
   groupId: string;
   messages?: Message[];
@@ -26,7 +24,7 @@ export interface User {
   _id: string;
   username: string;
   email: string;
-  password?: string; // Omit password when not needed
+  password: string;
   roles: string[];
   groups: string[]; // Array of group IDs
 }

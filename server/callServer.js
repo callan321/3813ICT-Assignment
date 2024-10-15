@@ -30,25 +30,30 @@ const callServer = () => {
     path: '/peerjs'
   });
 
+  // Store peer IDs
+  const peers = new Set();
+
   // Socket.IO event handling
   io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
 
-    // Handle joining a channel for video calls
-    socket.on('joinChannel', (channelId) => {
-      socket.join(channelId);
-      console.log(`Client ${socket.id} joined channel ${channelId}`);
-    });
+    // Handle registering Peer ID
+    socket.on('registerPeerId', (data) => {
+      const peerId = data.peerId;
+      peers.add(peerId);
+      socket.peerId = peerId;
+      console.log(`Client ${socket.id} registered Peer ID ${peerId}`);
 
-    // Handle dropping out of a channel
-    socket.on('leaveChannel', (channelId) => {
-      socket.leave(channelId);
-      console.log(`Client ${socket.id} left channel ${channelId}`);
+      // Notify all other clients about the new peer
+      socket.broadcast.emit('peerId', { peerId });
     });
 
     // Handle disconnection
     socket.on('disconnect', () => {
       console.log('Client disconnected:', socket.id);
+      if (socket.peerId) {
+        peers.delete(socket.peerId);
+      }
     });
   });
 
