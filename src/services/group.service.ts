@@ -27,22 +27,7 @@ export class GroupService {
     return this.http.get<Group[]>(`${this.apiBaseUrl}/groups/${userId}`);
   }
 
-  // Fetch channel details by channel IDs
-  getChannelsByIds(channelIds: string[]): Observable<Channel[]> {
-    if (channelIds.length === 0) {
-      return of([]);
-    }
-    // Assuming your backend has an endpoint to get multiple channels by IDs
-    return this.http.post<Channel[]>(`${this.apiBaseUrl}/channels/batch`, { channelIds });
-  }
 
-  // Get channels for a selected group
-  getChannelsForGroup(group: Group): Observable<Channel[]> {
-    if (!group.channels || group.channels.length === 0) {
-      return of([]);
-    }
-    return this.getChannelsByIds(group.channels);
-  }
 
   // Create a new group
   createGroup(groupName: string): Observable<Group> {
@@ -91,5 +76,10 @@ export class GroupService {
   // Fetch all groups
   getAllGroups(): Observable<Group[]> {
     return this.http.get<Group[]>(`${this.apiBaseUrl}/groups`);
+  }
+
+  // Add a user to a group
+  addUserToGroup(groupId: string, userId: string): Observable<any> {
+    return this.http.put(`${this.apiBaseUrl}/groups/${groupId}/add-user/${userId}`, {});
   }
 }

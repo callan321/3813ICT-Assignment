@@ -53,6 +53,7 @@ app.put('/api/groups/:groupId/remove-channel/:channelId', groupController.remove
 app.put('/api/groups/:groupId/upgrade-to-admin/:userId', groupController.upgradeToAdmin);
 app.post('/api/groups/:groupId/add-channel', groupController.addChannelToGroup);
 app.get('/api/groups/:userId', groupController.getGroupsAndChannelsForUser);
+app.put('/api/groups/:groupId/add-user/:userId', groupController.addUserToGroup);
 
 // Channel-specific message endpoint handled by Socket.IO
 app.post('/api/channel/:channelId/message', (req, res) => channelController.postMessageToChannel(req, res, io));

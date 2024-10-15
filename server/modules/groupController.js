@@ -1,3 +1,4 @@
+
 const { ObjectId } = require('mongodb');
 const { connectToDatabase } = require('./db');
 const { Group } = require('./models');
@@ -261,6 +262,38 @@ const getGroupsAndChannelsForUser = async (req, res) => {
   }
 };
 
+const addUserToGroup = async (req, res) => {
+  const groupId = req.params.groupId;
+  const userId = req.params.userId;
+
+  // Validate the groupId and userId
+  if (!ObjectId.isValid(groupId) || !ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: 'Invalid group ID or user ID format.' });
+  }
+
+  try {
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+
+    // Add the userId to the group's members array
+    const result = await groupsCollection.updateOne(
+      { _id: new ObjectId(groupId) },
+      { $addToSet: { members: new ObjectId(userId) } }  // $addToSet ensures no duplicates
+    );
+
+    // Check if the group was found and updated
+    if (result.matchedCount === 0) {
+      await client.close();
+      return res.status(404).json({ message: 'Group not found' });
+    }
+
+    res.json({ message: 'User added to group successfully' });
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error adding user to group', error: err.message });
+  }
+};
+
 
 
 module.exports = {
@@ -274,4 +307,5 @@ module.exports = {
   upgradeToAdmin,
   addChannelToGroup,
   getGroupsAndChannelsForUser,
+  addUserToGroup,
 };

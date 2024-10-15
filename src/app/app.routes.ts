@@ -9,6 +9,7 @@ import {UsersComponent} from "./pages/users/users.component";
 import {GroupsComponent} from "./pages/groups/groups.component";
 import {ChannelComponent} from "./pages/channel/channel.component";
 import {LoginGuard} from "../services/guards/login.guard";
+import {ProfileComponent} from "./profile/profile.component";
 
 
 export const routes: Routes = [
@@ -21,7 +22,8 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: 'home', component: HomeComponent },
-      { path: 'users', component: UsersComponent, canActivate: [SuperAdminGuard] },
+      // { path: 'users', component: UsersComponent, canActivate: [SuperAdminGuard] },
+      { path: 'profile', component: ProfileComponent },
       { path: 'groups', component: GroupsComponent },
       { path: 'channel/:channelId', component: ChannelComponent }
     ]

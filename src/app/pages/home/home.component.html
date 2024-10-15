@@ -1,3 +1,28 @@
-<p>home works!</p>
+<div class="container mt-5">
+  <h1 class="text-center">Welcome Home, {{ username }}!</h1>
 
+  <div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+      <h3 class="text-center">Join a Group</h3>
 
+      <form (ngSubmit)="joinGroup()">
+        <div class="mb-3">
+          <label for="groupId" class="form-label">Group ID</label>
+          <input
+            type="text"
+            id="groupId"
+            class="form-control"
+            [(ngModel)]="groupId"
+            name="groupId"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Join Group</button>
+      </form>
+
+      <!-- Display a success message or an error -->
+      <div *ngIf="message" class="alert alert-info mt-3">{{ message }}</div>
+    </div>
+  </div>
+</div>
