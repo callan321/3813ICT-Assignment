@@ -39,6 +39,7 @@ app.get('/', (req, res) => {
 
 // Users Endpoints
 app.get('/api/users', userController.getAllUsers);
+app.get('/api/users/:id', userController.getUserById);
 app.post('/api/users', userController.createUser);
 app.put('/api/users/:id', userController.updateUser);
 app.delete('/api/users/:id', userController.deleteUser);
@@ -79,4 +80,6 @@ server.listen(port, () => {
 });
 
 // call the sever that handles calls
-callServer();
+// callServer();
+
+module.exports = { app, server };

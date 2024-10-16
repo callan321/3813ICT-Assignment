@@ -15,6 +15,32 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// Get a single user by ID
+const getUserById = async (req, res) => {
+  const userId = req.params.id;
+
+  // Ensure the ID is a valid ObjectId
+  if (!ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: 'Invalid user ID format' });
+  }
+
+  try {
+    const { db, client } = await connectToDatabase();
+    const usersCollection = db.collection('users');
+    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+    if (!user) {
+      await client.close();
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(user);
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching user', err });
+  }
+};
+
 // Create a new user
 const createUser = async (req, res) => {
   const newUser = new User(
@@ -106,4 +132,5 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
+  getUserById
 };
