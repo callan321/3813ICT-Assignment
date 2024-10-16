@@ -156,11 +156,43 @@ const uploadImageToChannel = async (req, res, io) => {
   }
 };
 
+const getChannelNameById = async (req, res) => {
+  const channelId = req.params.channelId;
+
+  // Validate channelId
+  if (!ObjectId.isValid(channelId)) {
+    return res.status(400).json({ message: 'Invalid channel ID format.' });
+  }
+
+  try {
+    const { db, client } = await connectToDatabase();
+    const channelsCollection = db.collection('channels');
+
+    // Fetch only the 'channelName' field of the channel
+    const channel = await channelsCollection.findOne(
+      { _id: new ObjectId(channelId) },
+      { projection: { channelName: 1 } }
+    );
+
+    if (!channel) {
+      await client.close();
+      return res.status(404).json({ message: 'Channel not found' });
+    }
+
+    // Return only the channel name as 'name'
+    res.json({ name: channel.channelName });
+    await client.close();
+  } catch (err) {
+
+    res.status(500).json({ message: 'Error fetching channel name', error: err.message });
+  }
+};
 
 
 
 module.exports = {
   postMessageToChannel,
   getChannelById,
-  uploadImageToChannel
+  uploadImageToChannel,
+  getChannelNameById
 };

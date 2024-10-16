@@ -294,6 +294,32 @@ const addUserToGroup = async (req, res) => {
   }
 };
 
+// Get a single group by ID
+const getGroupById = async (req, res) => {
+  const { groupId } = req.params;
+
+  if (!ObjectId.isValid(groupId)) {
+    return res.status(400).json({ message: 'Invalid group ID format' });
+  }
+
+  try {
+    const { db, client } = await connectToDatabase();
+    const groupsCollection = db.collection('groups');
+
+    const group = await groupsCollection.findOne({ _id: new ObjectId(groupId) });
+
+    if (!group) {
+      await client.close();
+      return res.status(404).json({ message: 'Group not found' });
+    }
+
+    res.json(group);
+    await client.close();
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching group', error: err.message });
+  }
+};
+
 
 
 module.exports = {
@@ -308,4 +334,5 @@ module.exports = {
   addChannelToGroup,
   getGroupsAndChannelsForUser,
   addUserToGroup,
+  getGroupById,
 };
