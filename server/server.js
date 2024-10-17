@@ -55,7 +55,7 @@ app.put('/api/groups/:groupId/remove-admin/:adminId', groupController.removeAdmi
 app.put('/api/groups/:groupId/remove-channel/:channelId', groupController.removeChannelFromGroup);
 app.put('/api/groups/:groupId/upgrade-to-admin/:userId', groupController.upgradeToAdmin);
 app.post('/api/groups/:groupId/add-channel', groupController.addChannelToGroup);
-app.get('/api/groups/:userId', groupController.getGroupsAndChannelsForUser);
+app.get('/api/groups/user/:userId', groupController.getGroupsAndChannelsForUser);
 app.put('/api/groups/:groupId/add-user/:userId', groupController.addUserToGroup);
 
 

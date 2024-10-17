@@ -179,9 +179,9 @@ AdminGuard and GroupGuard were not fully implemented but were designed to protec
 - [ ] Leave a group
 - [ ] Delete themselves
 
-# Part 2: Assignment Phase 2 Additions
+# Assignment Phase 2 Additions
 
-In this phase of the assignment, we have extended the functionality of our chat application based on the requirements specified for Assignment Phase 2. The key addition includes integrating MongoDB for data storage.
+In this phase of the assignment, we have extended the functionality of our chat application based on the requirements specified for Assignment Phase 2. The key additions include integrating MongoDB for data storage and adding image support.
 
 ## Data Structures
 
@@ -201,7 +201,7 @@ In this phase of the assignment, we have extended the functionality of our chat 
 - **createdBy**: string
 - **admins**: string[]
 - **members**: string[]
-- **channels**: Channel[]
+- **channels**: string[] (Array of Channel IDs)
 
 ### Channel
 
@@ -213,9 +213,10 @@ In this phase of the assignment, we have extended the functionality of our chat 
 
 ### Message
 
-- **messageId**: number
+- **_id**: string (MongoDB ObjectId)
 - **senderId**: string
 - **content**: string
+- **type**: string ('img' or 'txt')
 - **timestamp**: Date
 
 ---
@@ -224,14 +225,42 @@ In this phase of the assignment, we have extended the functionality of our chat 
 
 ### Groups and Channels
 
-- `GET /api/groups/:userId`
+- `GET /api/groups/user/:userId`
   - Retrieve groups and channels for a specific user.
 
-- `GET /api/group/:groupId/channel/:channelId`
-  - Retrieve details of a specific channel within a group.
+- `GET /api/channel/:channelId`
+  - Retrieve details of a specific channel, including messages.
 
-- `POST /api/group/:groupId/channel/:channelId/message`
-  - Post a new message to a channel.
+- `POST /api/channel/:channelId/message`
+  - Post a new text message to a channel.
+
+- `POST /api/channel/:channelId/upload-image`
+  - Upload an image to a channel.
+
+- `GET /api/channel/name/:channelId`
+  - Retrieve the name of a specific channel.
+
+### Users
+
+- `GET /api/users`
+  - Retrieve all users.
+
+- `GET /api/users/:id`
+  - Retrieve a user by ID.
+
+- `POST /api/users`
+  - Create a new user.
+
+- `PUT /api/users/:id`
+  - Update a user.
+
+- `DELETE /api/users/:id`
+  - Delete a user.
+
+### Authentication
+
+- `POST /api/login`
+  - User login.
 
 ---
 
@@ -240,7 +269,7 @@ In this phase of the assignment, we have extended the functionality of our chat 
 ### New Components
 
 - **ChannelComponent**
-  - Manages chat within a channel, displays messages, and allows sending new messages.
+  - Manages chat within a channel, displays messages, allows sending new messages, and handles image uploads.
 
 ### Updated Components
 
@@ -254,6 +283,15 @@ In this phase of the assignment, we have extended the functionality of our chat 
   - Added methods to get the current user's ID.
   - Manages user authentication and authorization.
 
+- **ChannelService**
+  - Handles communication with the server regarding channels, messages, and image uploads.
+
+- **GroupService**
+  - Manages retrieval and updates related to groups and channels.
+
+- **UserService**
+  - Fetches user information, such as usernames for display.
+
 ---
 
 ## MongoDB Integration
@@ -262,6 +300,8 @@ In this phase of the assignment, we have extended the functionality of our chat 
 - Collections used:
   - `users`
   - `groups`
+  - `channels`
+  - `messages`
 - Controllers updated to interact with MongoDB using the MongoDB Node.js Driver.
 
 ### Connection Helper Function
@@ -273,13 +313,18 @@ Established a helper function to connect to the MongoDB database, ensuring datab
 ## How the Components Interact
 
 - **Client Side:**
-  - `ChannelComponent` communicates with the server to fetch and display messages.
+  - `ChannelComponent` communicates with the server to fetch and display messages, handles sending messages and image uploads.
   - `SidebarComponent` allows users to select groups and channels.
   - `AuthService` handles authentication and stores user data.
+  - `ChannelService` manages real-time communication and message handling.
+  - `UserService` retrieves user information for display purposes.
 
 - **Server Side:**
-  - `controllers.js` handles API requests and interacts with MongoDB collections.
-  - `server.js` sets up the Express server and routes.
+  - `userController.js` handles API requests related to users.
+  - `groupController.js` handles API requests related to groups.
+  - `channelController.js` handles API requests related to channels and messages.
+  - `auth.js` handles authentication.
+  - `server.js` sets up the Express server, routes, and Socket.IO for real-time communication.
 
 ---
 
@@ -289,23 +334,47 @@ Established a helper function to connect to the MongoDB database, ensuring datab
   - Data is now stored and managed using MongoDB.
 
 - [x] **Real-Time Chat Functionality**
+  - Implemented using Socket.IO for real-time messaging.
 
-- [ ] **Image Support**
-  - *To be implemented.*
+- [x] **Image Support**
+  - Users can upload and view images within channels.
 
 - [ ] **Video Support**
   - *To be implemented.*
 
-## Testing 
-### Server 
+## Testing
+
+### Server
+```
+cd server
+```
+- To seed the database with initial data:
+
+```
 npm run seed
-npm start 
+```
+
+- To start the server:
+
+```
+npm run dev
+```
+
+- To test the server:
+- 
+```
 npm test
+```
 
-### Client 
+### Client
+- To dev server:
+
+```
+ng serve
+```
+
+- To run tests:
+```
 ng test
-
-## Conclusion
-
-With the integration of MongoDB, the chat application now has a robust and scalable data storage solution. This sets the foundation for implementing real-time chat functionality and other advanced features in future iterations.
+```
 

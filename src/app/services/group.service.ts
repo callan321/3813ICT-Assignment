@@ -24,7 +24,7 @@ export class GroupService {
     if (!userId) {
       return of([]); // Return empty array if not authenticated
     }
-    return this.http.get<Group[]>(`${this.apiBaseUrl}/groups/${userId}`);
+    return this.http.get<Group[]>(`${this.apiBaseUrl}/groups/user/${userId}`);
   }
 
 
